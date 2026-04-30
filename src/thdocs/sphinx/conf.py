@@ -13,3 +13,7 @@ extensions = ["myst_parser"]
 master_doc = "index"
 exclude_patterns = ["_build"]
 html_theme = "alabaster"
+
+_static_dir = (Path(__file__).parent.parent / "static").resolve()
+html_static_path = [str(_static_dir)]
+html_css_files = ["thdocs.css"]

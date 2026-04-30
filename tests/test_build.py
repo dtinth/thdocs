@@ -29,6 +29,21 @@ def test_build_renders_title_into_index_html(tmp_path: Path, monkeypatch) -> Non
     assert "Foobar" in rendered
 
 
+def test_thdocs_css_is_linked_in_built_html(tmp_path: Path, monkeypatch) -> None:
+    _write_project(
+        tmp_path,
+        title="Site",
+        pages={"index.md": "# Hi\n"},
+    )
+
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+
+    assert (tmp_path / "_build" / "html" / "_static" / "thdocs.css").exists()
+    index_html = (tmp_path / "_build" / "html" / "index.html").read_text(encoding="utf-8")
+    assert "thdocs.css" in index_html
+
+
 def test_init_scaffolds_a_buildable_project(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
 
