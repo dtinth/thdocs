@@ -134,6 +134,49 @@ def test_rendered_pages_wrap_body_in_prose_main(tmp_path: Path, monkeypatch) -> 
     assert main_open < welcome_pos < main_close
 
 
+def test_sidebar_skeleton_has_three_tabs_with_contents_filled(
+    tmp_path: Path, monkeypatch
+) -> None:
+    index_md = (
+        "# Welcome\n"
+        "\n"
+        "```{toctree}\n"
+        "guide\n"
+        "```\n"
+    )
+    _write_project(
+        tmp_path,
+        title="Site",
+        pages={
+            "index.md": index_md,
+            "guide.md": "# Guide\n",
+        },
+    )
+    monkeypatch.chdir(tmp_path)
+
+    assert main(["build"]) == 0
+
+    rendered = (tmp_path / "_build" / "html" / "index.html").read_text(encoding="utf-8")
+
+    # All three tab buttons exist.
+    assert 'data-tab="contents"' in rendered
+    assert 'data-tab="index"' in rendered
+    assert 'data-tab="search"' in rendered
+
+    # All three panels exist.
+    contents_panel = rendered.index('data-panel="contents"')
+    index_panel = rendered.index('data-panel="index"')
+    search_panel = rendered.index('data-panel="search"')
+
+    # Panels appear in the expected order.
+    assert contents_panel < index_panel < search_panel
+
+    # The Contents panel actually contains the toctree (link to guide.html
+    # appears between the Contents panel marker and the next panel marker).
+    guide_link = rendered.index('href="guide.html"', contents_panel)
+    assert contents_panel < guide_link < index_panel
+
+
 def test_dev_invokes_sphinx_autobuild_with_project_paths(tmp_path: Path, monkeypatch) -> None:
     _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
     monkeypatch.chdir(tmp_path)
