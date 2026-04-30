@@ -108,6 +108,16 @@ def test_toctree_links_subpage(tmp_path: Path, monkeypatch) -> None:
     assert 'href="guide.html"' in index_html
 
 
+def test_thdocs_theme_marks_rendered_pages(tmp_path: Path, monkeypatch) -> None:
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
+    monkeypatch.chdir(tmp_path)
+
+    assert main(["build"]) == 0
+
+    index_html = (tmp_path / "_build" / "html" / "index.html").read_text(encoding="utf-8")
+    assert '<meta name="generator" content="thdocs">' in index_html
+
+
 def test_dev_invokes_sphinx_autobuild_with_project_paths(tmp_path: Path, monkeypatch) -> None:
     _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
     monkeypatch.chdir(tmp_path)

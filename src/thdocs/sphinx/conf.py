@@ -12,7 +12,10 @@ release = _cfg["site"].get("version", "")
 extensions = ["myst_parser"]
 master_doc = "index"
 exclude_patterns = ["_build"]
-html_theme = "alabaster"
+html_theme = "thdocs"
+
+_theme_dir = (Path(__file__).parent.parent / "theme").resolve()
+html_theme_path = [str(_theme_dir)]
 
 _static_dir = (Path(__file__).parent.parent / "static").resolve()
 html_static_path = [str(_static_dir)]
