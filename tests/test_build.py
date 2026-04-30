@@ -29,6 +29,20 @@ def test_build_renders_title_into_index_html(tmp_path: Path, monkeypatch) -> Non
     assert "Foobar" in rendered
 
 
+def test_init_scaffolds_a_buildable_project(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+
+    assert main(["init"]) == 0
+
+    assert (tmp_path / "thdocs.toml").exists()
+    assert (tmp_path / "docs" / "index.md").exists()
+    gitignore = (tmp_path / ".gitignore").read_text(encoding="utf-8")
+    assert "_build" in gitignore
+
+    assert main(["build"]) == 0
+    assert (tmp_path / "_build" / "html" / "index.html").exists()
+
+
 def test_toctree_links_subpage(tmp_path: Path, monkeypatch) -> None:
     index_md = (
         "# Welcome\n"
