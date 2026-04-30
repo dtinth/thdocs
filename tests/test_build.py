@@ -29,6 +29,28 @@ def test_build_renders_title_into_index_html(tmp_path: Path, monkeypatch) -> Non
     assert "Foobar" in rendered
 
 
+def test_index_directive_surfaces_term_in_genindex(tmp_path: Path, monkeypatch) -> None:
+    index_md = (
+        "# Welcome\n"
+        "\n"
+        "```{index} Quickstart\n"
+        "```\n"
+        "\n"
+        "Some content here.\n"
+    )
+    _write_project(
+        tmp_path,
+        title="Site",
+        pages={"index.md": index_md},
+    )
+
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+
+    genindex = (tmp_path / "_build" / "html" / "genindex.html").read_text(encoding="utf-8")
+    assert "Quickstart" in genindex
+
+
 def test_thdocs_css_is_linked_in_built_html(tmp_path: Path, monkeypatch) -> None:
     _write_project(
         tmp_path,
