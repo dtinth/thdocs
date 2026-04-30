@@ -12,7 +12,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("build", help="Build the documentation site.")
     dev = sub.add_parser("dev", help="Live-reload dev server.")
     dev.add_argument("--host", default="0.0.0.0", help="Bind address (default: 0.0.0.0).")
-    dev.add_argument("--port", default="8000", help="Bind port (default: 8000).")
+    dev.add_argument("--port", default="20080", help="Bind port (default: 20080).")
     sub.add_parser("init", help="Scaffold a new docs project in the current directory.")
     args = parser.parse_args(argv)
 

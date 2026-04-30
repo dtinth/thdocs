@@ -229,7 +229,7 @@ def test_dev_invokes_sphinx_autobuild_with_project_paths(
     assert any(arg.endswith("/sphinx") and "thdocs" in arg for arg in argv)
 
 
-def test_dev_defaults_host_to_0_0_0_0_and_port_to_8000(
+def test_dev_defaults_host_to_0_0_0_0_and_port_to_20080(
     tmp_path: Path, monkeypatch
 ) -> None:
     _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
@@ -241,7 +241,7 @@ def test_dev_defaults_host_to_0_0_0_0_and_port_to_8000(
 
     argv = captured["argv"]
     assert "--host" in argv and argv[argv.index("--host") + 1] == "0.0.0.0"
-    assert "--port" in argv and argv[argv.index("--port") + 1] == "8000"
+    assert "--port" in argv and argv[argv.index("--port") + 1] == "20080"
 
 
 def test_dev_passes_explicit_host_and_port_through(
