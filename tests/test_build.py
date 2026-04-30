@@ -199,30 +199,64 @@ def test_thdocs_js_is_linked_in_built_html(tmp_path: Path, monkeypatch) -> None:
     assert "thdocs.js" in index_html
 
 
-def test_dev_invokes_sphinx_autobuild_with_project_paths(tmp_path: Path, monkeypatch) -> None:
-    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
-    monkeypatch.chdir(tmp_path)
-
+def _capture_autobuild_argv(monkeypatch) -> dict:
     import sphinx_autobuild.__main__
 
-    captured = {}
+    captured: dict = {}
 
     def fake_main(argv):
         captured["argv"] = list(argv)
         return 0
 
     monkeypatch.setattr(sphinx_autobuild.__main__, "main", fake_main)
+    return captured
+
+
+def test_dev_invokes_sphinx_autobuild_with_project_paths(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
+    monkeypatch.chdir(tmp_path)
+
+    captured = _capture_autobuild_argv(monkeypatch)
 
     assert main(["dev"]) == 0
 
     argv = captured["argv"]
     assert "-b" in argv and argv[argv.index("-b") + 1] == "html"
-    # srcdir is the project's docs/
     assert str(tmp_path / "docs") in argv
-    # outdir is the project's _build/html
     assert str(tmp_path / "_build" / "html") in argv
-    # confdir is the in-package sphinx dir
     assert any(arg.endswith("/sphinx") and "thdocs" in arg for arg in argv)
+
+
+def test_dev_defaults_host_to_0_0_0_0_and_port_to_8000(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
+    monkeypatch.chdir(tmp_path)
+
+    captured = _capture_autobuild_argv(monkeypatch)
+
+    assert main(["dev"]) == 0
+
+    argv = captured["argv"]
+    assert "--host" in argv and argv[argv.index("--host") + 1] == "0.0.0.0"
+    assert "--port" in argv and argv[argv.index("--port") + 1] == "8000"
+
+
+def test_dev_passes_explicit_host_and_port_through(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
+    monkeypatch.chdir(tmp_path)
+
+    captured = _capture_autobuild_argv(monkeypatch)
+
+    assert main(["dev", "--host", "127.0.0.1", "--port", "9000"]) == 0
+
+    argv = captured["argv"]
+    assert "--host" in argv and argv[argv.index("--host") + 1] == "127.0.0.1"
+    assert "--port" in argv and argv[argv.index("--port") + 1] == "9000"
 
 
 def test_compiled_assets_carry_sidebar_contract(

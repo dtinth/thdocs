@@ -10,14 +10,16 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="thdocs")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("build", help="Build the documentation site.")
-    sub.add_parser("dev", help="Live-reload dev server.")
+    dev = sub.add_parser("dev", help="Live-reload dev server.")
+    dev.add_argument("--host", default="0.0.0.0", help="Bind address (default: 0.0.0.0).")
+    dev.add_argument("--port", default="8000", help="Bind port (default: 8000).")
     sub.add_parser("init", help="Scaffold a new docs project in the current directory.")
     args = parser.parse_args(argv)
 
     if args.command == "build":
         return _build()
     if args.command == "dev":
-        return _dev()
+        return _dev(host=args.host, port=args.port)
     if args.command == "init":
         return _init()
     raise AssertionError(f"unhandled command: {args.command}")
@@ -74,9 +76,18 @@ def _get_project_paths() -> tuple[Path, Path, Path]:
     return srcdir, outdir, confdir
 
 
-def _dev() -> int:
+def _dev(*, host: str, port: str) -> int:
     srcdir, outdir, confdir = _get_project_paths()
-    return sphinx_autobuild.__main__.main(["-c", str(confdir), "-b", "html", str(srcdir), str(outdir)])
+    return sphinx_autobuild.__main__.main(
+        [
+            "--host", host,
+            "--port", port,
+            "-c", str(confdir),
+            "-b", "html",
+            str(srcdir),
+            str(outdir),
+        ]
+    )
 
 
 def _build() -> int:
