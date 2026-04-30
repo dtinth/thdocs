@@ -118,6 +118,22 @@ def test_thdocs_theme_marks_rendered_pages(tmp_path: Path, monkeypatch) -> None:
     assert '<meta name="generator" content="thdocs">' in index_html
 
 
+def test_rendered_pages_wrap_body_in_prose_main(tmp_path: Path, monkeypatch) -> None:
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Welcome\n\nHello there.\n"})
+    monkeypatch.chdir(tmp_path)
+
+    assert main(["build"]) == 0
+
+    index_html = (tmp_path / "_build" / "html" / "index.html").read_text(encoding="utf-8")
+    assert '<main class="prose">' in index_html
+    # The rendered content (the H1 title) must appear inside the wrapper, not before it.
+    main_open = index_html.index('<main class="prose">')
+    main_close = index_html.index("</main>")
+    # Search for "Welcome" starting after the opening <main> tag to find the rendered content, not the <title>
+    welcome_pos = index_html.index("Welcome", main_open)
+    assert main_open < welcome_pos < main_close
+
+
 def test_dev_invokes_sphinx_autobuild_with_project_paths(tmp_path: Path, monkeypatch) -> None:
     _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
     monkeypatch.chdir(tmp_path)
