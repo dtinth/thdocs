@@ -1,17 +1,25 @@
-import os
 from pathlib import Path
 
 from thdocs.cli import main
 
 
-def test_build_renders_title_into_index_html(tmp_path: Path, monkeypatch) -> None:
-    (tmp_path / "thdocs.toml").write_text(
-        '[site]\ntitle = "Foobar"\n',
+def _write_project(root: Path, *, title: str, pages: dict[str, str]) -> None:
+    (root / "thdocs.toml").write_text(
+        f'[site]\ntitle = "{title}"\n',
         encoding="utf-8",
     )
-    docs_dir = tmp_path / "docs"
+    docs_dir = root / "docs"
     docs_dir.mkdir()
-    (docs_dir / "index.md").write_text("# Welcome\n", encoding="utf-8")
+    for name, body in pages.items():
+        (docs_dir / name).write_text(body, encoding="utf-8")
+
+
+def test_build_renders_title_into_index_html(tmp_path: Path, monkeypatch) -> None:
+    _write_project(
+        tmp_path,
+        title="Foobar",
+        pages={"index.md": "# Welcome\n"},
+    )
 
     monkeypatch.chdir(tmp_path)
     exit_code = main(["build"])
@@ -19,3 +27,31 @@ def test_build_renders_title_into_index_html(tmp_path: Path, monkeypatch) -> Non
     assert exit_code == 0
     rendered = (tmp_path / "_build" / "html" / "index.html").read_text(encoding="utf-8")
     assert "Foobar" in rendered
+
+
+def test_toctree_links_subpage(tmp_path: Path, monkeypatch) -> None:
+    index_md = (
+        "# Welcome\n"
+        "\n"
+        "```{toctree}\n"
+        "guide\n"
+        "```\n"
+    )
+    _write_project(
+        tmp_path,
+        title="Site",
+        pages={
+            "index.md": index_md,
+            "guide.md": "# Setup steps\n\nDo the thing.\n",
+        },
+    )
+
+    monkeypatch.chdir(tmp_path)
+    exit_code = main(["build"])
+
+    assert exit_code == 0
+    html_dir = tmp_path / "_build" / "html"
+    guide_html = (html_dir / "guide.html").read_text(encoding="utf-8")
+    assert "Setup steps" in guide_html
+    index_html = (html_dir / "index.html").read_text(encoding="utf-8")
+    assert 'href="guide.html"' in index_html
