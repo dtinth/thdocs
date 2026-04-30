@@ -223,3 +223,26 @@ def test_dev_invokes_sphinx_autobuild_with_project_paths(tmp_path: Path, monkeyp
     assert str(tmp_path / "_build" / "html") in argv
     # confdir is the in-package sphinx dir
     assert any(arg.endswith("/sphinx") and "thdocs" in arg for arg in argv)
+
+
+def test_compiled_assets_carry_sidebar_contract(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+
+    static = tmp_path / "_build" / "html" / "_static"
+    js = (static / "thdocs.js").read_text(encoding="utf-8")
+    css = (static / "thdocs.css").read_text(encoding="utf-8")
+
+    # The JS bundle has to know about the data attributes the sidebar template uses,
+    # otherwise the tabs won't switch when clicked. Strings survive minification.
+    assert "data-tab" in js
+    assert "data-panel" in js
+
+    # The CSS bundle has to carry our sidebar component styles. We check for two
+    # selectors so that a regression in either the @layer components block or the
+    # token-using rule gets caught.
+    assert ".thdocs-tabs" in css
+    assert ".thdocs-tab-panel" in css

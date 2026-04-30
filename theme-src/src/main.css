@@ -1,3 +1,40 @@
 @import "tailwindcss";
 @source "../../src/thdocs/theme/thdocs/**/*.html";
 @plugin "@tailwindcss/typography";
+
+@theme {
+  --color-thdocs-text: #e9e8e7;
+  --color-thdocs-muted: #8b8685;
+  --color-thdocs-border: #454443;
+  --color-thdocs-accent: #bbeeff;
+  --color-thdocs-sidebar: #252423;
+}
+
+@layer components {
+  .thdocs-sidebar {
+    background-color: var(--color-thdocs-sidebar);
+    color: var(--color-thdocs-text);
+    padding: 1rem;
+  }
+  .thdocs-tabs {
+    display: flex;
+    gap: 0.25rem;
+    border-bottom: 1px solid var(--color-thdocs-border);
+    margin-bottom: 1rem;
+  }
+  .thdocs-tabs button {
+    background: none;
+    border: 0;
+    color: var(--color-thdocs-muted);
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+    font: inherit;
+  }
+  .thdocs-tabs button[aria-selected="true"] {
+    color: var(--color-thdocs-text);
+    border-bottom: 2px solid var(--color-thdocs-accent);
+  }
+  .thdocs-tab-panel[hidden] {
+    display: none !important;
+  }
+}
