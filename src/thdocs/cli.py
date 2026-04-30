@@ -3,17 +3,21 @@ import os
 from pathlib import Path
 
 from sphinx.cmd.build import build_main
+import sphinx_autobuild.__main__
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="thdocs")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("build", help="Build the documentation site.")
+    sub.add_parser("dev", help="Live-reload dev server.")
     sub.add_parser("init", help="Scaffold a new docs project in the current directory.")
     args = parser.parse_args(argv)
 
     if args.command == "build":
         return _build()
+    if args.command == "dev":
+        return _dev()
     if args.command == "init":
         return _init()
     raise AssertionError(f"unhandled command: {args.command}")
@@ -56,7 +60,8 @@ def _init() -> int:
     return 0
 
 
-def _build() -> int:
+def _get_project_paths() -> tuple[Path, Path, Path]:
+    """Discover project paths and return (srcdir, outdir, confdir)."""
     project_root = Path.cwd()
     if not (project_root / "thdocs.toml").exists():
         raise SystemExit("thdocs.toml not found in current directory")
@@ -66,4 +71,14 @@ def _build() -> int:
     confdir = Path(__file__).parent / "sphinx"
 
     os.environ["THDOCS_PROJECT"] = str(project_root)
+    return srcdir, outdir, confdir
+
+
+def _dev() -> int:
+    srcdir, outdir, confdir = _get_project_paths()
+    return sphinx_autobuild.__main__.main(["-c", str(confdir), "-b", "html", str(srcdir), str(outdir)])
+
+
+def _build() -> int:
+    srcdir, outdir, confdir = _get_project_paths()
     return build_main(["-c", str(confdir), "-b", "html", str(srcdir), str(outdir)])

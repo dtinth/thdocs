@@ -106,3 +106,29 @@ def test_toctree_links_subpage(tmp_path: Path, monkeypatch) -> None:
     assert "Setup steps" in guide_html
     index_html = (html_dir / "index.html").read_text(encoding="utf-8")
     assert 'href="guide.html"' in index_html
+
+
+def test_dev_invokes_sphinx_autobuild_with_project_paths(tmp_path: Path, monkeypatch) -> None:
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
+    monkeypatch.chdir(tmp_path)
+
+    import sphinx_autobuild.__main__
+
+    captured = {}
+
+    def fake_main(argv):
+        captured["argv"] = list(argv)
+        return 0
+
+    monkeypatch.setattr(sphinx_autobuild.__main__, "main", fake_main)
+
+    assert main(["dev"]) == 0
+
+    argv = captured["argv"]
+    assert "-b" in argv and argv[argv.index("-b") + 1] == "html"
+    # srcdir is the project's docs/
+    assert str(tmp_path / "docs") in argv
+    # outdir is the project's _build/html
+    assert str(tmp_path / "_build" / "html") in argv
+    # confdir is the in-package sphinx dir
+    assert any(arg.endswith("/sphinx") and "thdocs" in arg for arg in argv)

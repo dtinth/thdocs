@@ -6,6 +6,7 @@ requires-python = ">=3.13"
 dependencies = [
     "sphinx>=7",
     "myst-parser>=3",
+    "sphinx-autobuild>=2021",
 ]
 
 [project.scripts]
