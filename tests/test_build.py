@@ -177,6 +177,28 @@ def test_sidebar_skeleton_has_three_tabs_with_contents_filled(
     assert contents_panel < guide_link < index_panel
 
 
+def test_compiled_thdocs_css_includes_tailwind_typography(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+    css = (tmp_path / "_build" / "html" / "_static" / "thdocs.css").read_text(
+        encoding="utf-8"
+    )
+    # @tailwindcss/typography must have run.
+    assert ".prose" in css
+
+
+def test_thdocs_js_is_linked_in_built_html(tmp_path: Path, monkeypatch) -> None:
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+    assert (tmp_path / "_build" / "html" / "_static" / "thdocs.js").exists()
+    index_html = (tmp_path / "_build" / "html" / "index.html").read_text(encoding="utf-8")
+    assert "thdocs.js" in index_html
+
+
 def test_dev_invokes_sphinx_autobuild_with_project_paths(tmp_path: Path, monkeypatch) -> None:
     _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
     monkeypatch.chdir(tmp_path)

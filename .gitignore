@@ -5,3 +5,5 @@ _build/
 .pytest_cache/
 dist/
 *.egg-info/
+theme-src/node_modules/
+theme-src/dist/

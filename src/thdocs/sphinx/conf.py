@@ -20,5 +20,6 @@ html_theme_path = [str(_theme_dir)]
 _static_dir = (Path(__file__).parent.parent / "static").resolve()
 html_static_path = [str(_static_dir)]
 html_css_files = ["thdocs.css"]
+html_js_files = ["thdocs.js"]
 
 html_sidebars = {"**": ["thdocs-sidebar.html"]}
