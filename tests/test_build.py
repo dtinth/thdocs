@@ -335,3 +335,42 @@ def test_dark_theme_and_fonts_applied(tmp_path: Path, monkeypatch) -> None:
         "fonts.googleapis.com/css2?family=Arimo" in index_html
     ), "HTML must contain Google Fonts Arimo link"
     assert "comic-mono" in index_html, "HTML must contain Comic Mono CDN link"
+
+
+def test_prose_dark_theme_applied(tmp_path: Path, monkeypatch) -> None:
+    """Prose content uses dark theme colors, not Tailwind typography's light defaults."""
+    markdown = (
+        "# Heading\n"
+        "\n"
+        "This is a paragraph with `inline code` and a [link](https://example.com).\n"
+        "\n"
+        "```\ncode block\n```\n"
+    )
+    _write_project(tmp_path, title="Site", pages={"index.md": markdown})
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+
+    css = (tmp_path / "_build" / "html" / "_static" / "thdocs.css").read_text(
+        encoding="utf-8"
+    )
+
+    # Verify key prose dark theme tokens are set (check for variable references or explicit values).
+    assert "--tw-prose-body" in css, "CSS must set --tw-prose-body"
+    assert "--tw-prose-pre-bg" in css, "CSS must set --tw-prose-pre-bg"
+    assert "--tw-prose-links" in css, "CSS must set --tw-prose-links"
+
+    # Verify the values match apiref's dark theme (body text light, pre bg dark, links yellow).
+    # Body text should be light (#e9e8e7 or var reference to thdocs-text).
+    assert (
+        "#e9e8e7" in css or "var(--color-thdocs-text)" in css
+    ), "Prose body text must be light (#e9e8e7)"
+    # Pre bg should be dark sidebar color (#252423 or var reference to thdocs-sidebar).
+    assert (
+        "#252423" in css or "var(--color-thdocs-sidebar)" in css
+    ), "Prose pre bg must be dark (#252423)"
+    # Links should be yellow (#ffffbb, #ffb hex shorthand, or var reference to thdocs-accent-yellow).
+    assert (
+        "#ffffbb" in css or "#ffb" in css or "var(--color-thdocs-accent-yellow)" in css
+    ), "Prose links must be yellow (#ffffbb)"
+
+
