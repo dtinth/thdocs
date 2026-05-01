@@ -27,9 +27,20 @@ html div.document {
   --color-thdocs-border: #454443;
   --color-thdocs-accent: #bbeeff;
   --color-thdocs-sidebar: #252423;
+  --color-thdocs-bg: #353433;
+  --color-thdocs-header: #090807;
+  --color-thdocs-accent-green: #d7fc70;
+  --color-thdocs-accent-yellow: #ffffbb;
+  --font-sans: "Arimo", "Helvetica", "Arial", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Comic Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 @layer base {
+  body {
+    background-color: var(--color-thdocs-bg);
+    color: var(--color-thdocs-text);
+    letter-spacing: 0.01em;
+  }
   .bodywrapper {
     min-width: 0;
   }

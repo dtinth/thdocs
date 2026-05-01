@@ -312,3 +312,26 @@ def test_sidebar_is_visible_at_first_paint(
         )
     )
     assert has_override, "CSS must override .sphinxsidebar's float/margin-left offscreen trick"
+
+
+def test_dark_theme_and_fonts_applied(tmp_path: Path, monkeypatch) -> None:
+    """The thdocs theme applies the dark color scheme and custom fonts."""
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+
+    # Check compiled CSS contains the dark body background color.
+    css = (tmp_path / "_build" / "html" / "_static" / "thdocs.css").read_text(
+        encoding="utf-8"
+    )
+    assert "#353433" in css, "CSS must contain dark body background color #353433"
+    assert "Arimo" in css, "CSS must contain Arimo font name"
+
+    # Check HTML head contains font loading links.
+    index_html = (tmp_path / "_build" / "html" / "index.html").read_text(
+        encoding="utf-8"
+    )
+    assert (
+        "fonts.googleapis.com/css2?family=Arimo" in index_html
+    ), "HTML must contain Google Fonts Arimo link"
+    assert "comic-mono" in index_html, "HTML must contain Comic Mono CDN link"
