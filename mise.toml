@@ -1,3 +1,4 @@
 [tools]
 uv = "latest"
 node = "24"
+pnpm = "10"

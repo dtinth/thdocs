@@ -13,11 +13,6 @@ jobs:
 
       - uses: jdx/mise-action@v2
 
-      - name: Enable corepack
-        run: |
-          corepack enable
-          corepack prepare pnpm@10.33.2 --activate
-
       - name: Install Python dependencies
         run: uv sync
 
@@ -38,9 +33,6 @@ jobs:
       - uses: actions/checkout@v6
 
       - uses: jdx/mise-action@v2
-
-      - name: Enable corepack
-        run: corepack enable
 
       - name: Install Python dependencies
         run: uv sync
