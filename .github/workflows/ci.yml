@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: jdx/mise-action@v2
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install Python dependencies
+        run: uv sync
+
+      - name: Run unit tests
+        run: uv run pytest tests/test_build.py -v
+
+      - name: Verify theme assets are in sync
+        working-directory: theme-src
+        run: |
+          pnpm install
+          pnpm build
+          cd ..
+          git diff --exit-code src/thdocs/static/
+
+  browser-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: jdx/mise-action@v2
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install Python dependencies
+        run: uv sync
+
+      - name: Install Playwright browsers
+        run: uv run playwright install chromium
+
+      - name: Run browser tests
+        run: uv run pytest tests/test_browser.py -v
