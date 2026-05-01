@@ -7,3 +7,10 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/comic-mono@0.0.1/index.css">
 {%- endblock %}
+{%- block document -%}
+  {{ super() }}
+  <aside class="thdocs-page-toc">
+    <div class="thdocs-page-toc-title">On this page</div>
+    {{ toc }}
+  </aside>
+{%- endblock %}

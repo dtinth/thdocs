@@ -13,8 +13,17 @@ html div.sphinxsidebarwrapper {
 
 html div.document {
   display: grid;
-  grid-template-columns: 230px 1fr;
+  grid-template-columns: 230px minmax(0, 1fr) 240px;
+  grid-auto-flow: dense;
   gap: 1rem;
+}
+
+html div.sphinxsidebar {
+  grid-column: 1;
+}
+
+html div.documentwrapper {
+  grid-column: 2;
 }
 
 .prose {
@@ -45,6 +54,60 @@ html div.document {
 
 .prose a:hover {
   text-decoration: underline;
+}
+
+.thdocs-page-toc {
+  grid-column: 3;
+  position: sticky;
+  top: 1rem;
+  align-self: start;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  font-size: 0.8125rem;
+  color: var(--color-thdocs-muted);
+  padding-left: 1rem;
+  border-left: 1px solid var(--color-thdocs-border);
+}
+
+.thdocs-page-toc-title {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-thdocs-muted);
+  margin-bottom: 0.5rem;
+}
+
+.thdocs-page-toc ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.thdocs-page-toc li {
+  margin: 0;
+}
+
+.thdocs-page-toc a {
+  display: block;
+  padding: 0.125rem 0.25rem;
+  color: var(--color-thdocs-muted);
+  text-decoration: none;
+  border-radius: 2px;
+  line-height: 1.4;
+}
+
+.thdocs-page-toc a:hover {
+  color: var(--color-thdocs-text);
+  background: rgba(255,255,255,0.05);
+}
+
+.thdocs-page-toc a.thdocs-toc-active {
+  color: var(--color-thdocs-accent);
+}
+
+.thdocs-page-toc ul ul a {
+  padding-left: 1rem;
 }
 
 .prose :where(code):not(:where(pre *)) {

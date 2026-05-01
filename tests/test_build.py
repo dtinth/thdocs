@@ -374,6 +374,74 @@ def test_prose_dark_theme_applied(tmp_path: Path, monkeypatch) -> None:
     ), "Prose links must be yellow (#ffffbb)"
 
 
+def test_sidebar_renders_in_left_grid_column(tmp_path: Path, monkeypatch) -> None:
+    """The sidebar must be positioned in grid column 1 (left) via CSS override."""
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+
+    css = (tmp_path / "_build" / "html" / "_static" / "thdocs.css").read_text(
+        encoding="utf-8"
+    )
+    # The CSS must contain a rule that places .sphinxsidebar in grid-column: 1
+    assert ".sphinxsidebar" in css
+    import re
+    has_grid_column_1 = bool(
+        re.search(
+            r"\.sphinxsidebar\s*\{[^}]*grid-column\s*:\s*1[^}]*\}",
+            css,
+        )
+    )
+    assert has_grid_column_1, "CSS must set .sphinxsidebar to grid-column: 1"
+
+
+def test_page_toc_aside_renders_with_h2_links(tmp_path: Path, monkeypatch) -> None:
+    """The right rail 'On this page' aside must render with h2/h3 links."""
+    index_md = (
+        "# Welcome\n"
+        "\n"
+        "## Section A\n"
+        "\n"
+        "Content here.\n"
+        "\n"
+        "## Section B\n"
+        "\n"
+        "More content.\n"
+    )
+    _write_project(tmp_path, title="Site", pages={"index.md": index_md})
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+
+    html = (tmp_path / "_build" / "html" / "index.html").read_text(encoding="utf-8")
+
+    # The aside with class thdocs-page-toc must exist
+    assert 'class="thdocs-page-toc"' in html
+
+    # The heading "On this page" must exist
+    assert "On this page" in html
+
+    # Links to both sections must exist in the aside
+    assert "#section-a" in html
+    assert "#section-b" in html
+
+
+def test_page_toc_scrollspy_js_is_shipped(tmp_path: Path, monkeypatch) -> None:
+    """The scrollspy JS code must be present in the compiled bundle."""
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+
+    js = (tmp_path / "_build" / "html" / "_static" / "thdocs.js").read_text(
+        encoding="utf-8"
+    )
+
+    # The JS must contain IntersectionObserver and the scrollspy active class
+    assert "IntersectionObserver" in js, "JS must contain IntersectionObserver"
+    assert (
+        "thdocs-toc-active" in js
+    ), "JS must contain thdocs-toc-active class reference"
+
+
 def test_bundled_docs_project_builds(monkeypatch) -> None:
     """The real docs/ project at the repo root builds successfully and renders the kitchen sink."""
     import subprocess
