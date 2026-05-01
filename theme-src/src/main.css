@@ -244,6 +244,16 @@ html div.documentwrapper {
     background-color: var(--color-thdocs-sidebar);
     color: var(--color-thdocs-text);
     padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100vh - 2rem);
+  }
+  .thdocs-tab-panel {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
   }
   .thdocs-tabs {
     display: flex;

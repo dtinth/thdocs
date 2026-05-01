@@ -152,14 +152,95 @@ function setupScrollspy(): void {
   }
 }
 
+function setupToctreeNavMemory(): void {
+  const contentsPanel = document.querySelector<HTMLElement>(
+    ".thdocs-sidebar [data-panel='contents']"
+  );
+  if (!contentsPanel) return;
+
+  // Capture scroll position and focus on link click
+  contentsPanel.addEventListener("click", (e) => {
+    if (!(e.target instanceof Element)) return;
+    const link = e.target.closest<HTMLAnchorElement>("a");
+    if (!link) return;
+
+    sessionStorage.setItem("thdocs:tocScroll", String(contentsPanel.scrollTop));
+
+    // Only capture focus if the link was focused when clicked
+    if (document.activeElement === link) {
+      sessionStorage.setItem("thdocs:tocFocusHref", link.href);
+    } else {
+      sessionStorage.removeItem("thdocs:tocFocusHref");
+    }
+  });
+
+  // Also capture on Enter keydown for keyboard navigation
+  contentsPanel.addEventListener("keydown", (e) => {
+    if (!(e.target instanceof Element)) return;
+    const link = e.target.closest<HTMLAnchorElement>("a");
+    if (!link || e.key !== "Enter") return;
+
+    sessionStorage.setItem("thdocs:tocScroll", String(contentsPanel.scrollTop));
+
+    if (document.activeElement === link) {
+      sessionStorage.setItem("thdocs:tocFocusHref", link.href);
+    }
+  });
+
+  // Restore scroll position and focus on page load
+  const savedScroll = sessionStorage.getItem("thdocs:tocScroll");
+  if (savedScroll !== null) {
+    contentsPanel.scrollTop = parseInt(savedScroll, 10);
+  }
+
+  const focusHref = sessionStorage.getItem("thdocs:tocFocusHref");
+  if (focusHref) {
+    const normalize = (h: string) => h.replace(/#$/, "");
+    const target = normalize(focusHref);
+    const links = Array.from(
+      contentsPanel.querySelectorAll<HTMLAnchorElement>("a")
+    );
+    const targetLink = links.find((link) => normalize(link.href) === target);
+
+    if (targetLink) {
+      // Ensure ancestors are expanded
+      let parent = targetLink.closest<HTMLElement>("li");
+      while (parent && parent !== contentsPanel) {
+        const parentLi = parent.closest<HTMLElement>("li.toctree-l1, li.toctree-l2, li.toctree-l3, li.toctree-l4");
+        if (!parentLi || parentLi === parent) break;
+
+        const toggle = parentLi.querySelector<HTMLButtonElement>(
+          ".thdocs-toc-toggle"
+        );
+        if (toggle && toggle.getAttribute("aria-expanded") === "false") {
+          toggle.setAttribute("aria-expanded", "true");
+        }
+
+        parent = parentLi.parentElement as HTMLElement | null;
+      }
+
+      // Restore focus on next macrotask after Sphinx scripts finish claiming focus.
+      // Use setTimeout with 0 delay to defer past both DOMContentLoaded handlers and
+      // any other microtasks. Also set tabindex to ensure the element can receive focus.
+      setTimeout(() => {
+        targetLink.focus({ preventScroll: true });
+      }, 0);
+    }
+
+    sessionStorage.removeItem("thdocs:tocFocusHref");
+  }
+}
+
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     wireSidebarTabs();
     setupScrollspy();
     setupToctreeCollapse();
+    setupToctreeNavMemory();
   });
 } else {
   wireSidebarTabs();
   setupScrollspy();
   setupToctreeCollapse();
+  setupToctreeNavMemory();
 }

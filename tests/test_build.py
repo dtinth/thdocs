@@ -511,3 +511,20 @@ def test_toctree_collapsed_by_default_via_css(tmp_path: Path, monkeypatch) -> No
     assert (
         has_collapse_css
     ), "CSS must hide nested <ul> when parent is collapsed (aria-expanded=false with display:none)"
+
+
+def test_toctree_nav_memory_js_is_shipped(tmp_path: Path, monkeypatch) -> None:
+    """The toctree nav memory JS (scroll and focus restoration) must be compiled into thdocs.js."""
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+
+    js = (tmp_path / "_build" / "html" / "_static" / "thdocs.js").read_text(
+        encoding="utf-8"
+    )
+
+    # The JS must contain the sessionStorage keys for scroll and focus restoration.
+    assert "thdocs:tocScroll" in js, "JS must contain thdocs:tocScroll key"
+    assert "thdocs:tocFocusHref" in js, "JS must contain thdocs:tocFocusHref key"
+    # The JS must contain the preventScroll focus option.
+    assert "preventScroll" in js, "JS must contain preventScroll for safe focus restoration"
