@@ -374,3 +374,34 @@ def test_prose_dark_theme_applied(tmp_path: Path, monkeypatch) -> None:
     ), "Prose links must be yellow (#ffffbb)"
 
 
+def test_bundled_docs_project_builds(monkeypatch) -> None:
+    """The real docs/ project at the repo root builds successfully and renders the kitchen sink."""
+    import subprocess
+
+    # Find the repo root (parent of tests/ directory).
+    test_file = Path(__file__)
+    repo_root = test_file.parent.parent
+    docs_dir = repo_root / "docs"
+
+    assert docs_dir.exists(), f"docs/ directory not found at {docs_dir}"
+
+    monkeypatch.chdir(repo_root)
+    exit_code = main(["build"])
+
+    assert exit_code == 0, "docs project build failed"
+
+    index_html = repo_root / "_build" / "html" / "index.html"
+    assert index_html.exists(), f"index.html not found at {index_html}"
+
+    index_content = index_html.read_text(encoding="utf-8")
+    assert "Getting Started" in index_content, "Landing page must mention 'Getting Started'"
+    assert "Kitchen Sink" in index_content, "Landing page must mention 'Kitchen Sink'"
+    assert "Internals" in index_content, "Landing page must mention 'Internals'"
+
+    kitchen_sink_html = repo_root / "_build" / "html" / "kitchen-sink.html"
+    assert kitchen_sink_html.exists(), f"kitchen-sink.html not found at {kitchen_sink_html}"
+
+    ks_content = kitchen_sink_html.read_text(encoding="utf-8")
+    assert "<table" in ks_content, "Kitchen sink must contain a table"
+    assert "<details" in ks_content, "Kitchen sink must contain a details/summary block"
+    assert "<kbd" in ks_content, "Kitchen sink must contain a <kbd> element"
