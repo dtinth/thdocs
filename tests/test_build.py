@@ -280,3 +280,35 @@ def test_compiled_assets_carry_sidebar_contract(
     # token-using rule gets caught.
     assert ".thdocs-tabs" in css
     assert ".thdocs-tab-panel" in css
+
+
+def test_sidebar_is_visible_at_first_paint(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """The sidebar must be visible at first paint by overriding Sphinx's
+    float/margin trick that hides it offscreen.
+    """
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+
+    css = (tmp_path / "_build" / "html" / "_static" / "thdocs.css").read_text(
+        encoding="utf-8"
+    )
+
+    # The CSS must neutralize Sphinx's basic.css float and margin trick that
+    # pushes the sidebar off-screen. We check for either explicit overrides
+    # (margin-left: 0 or margin-left: unset) or a layout shift to flex/grid.
+    # The simplest check: the compiled CSS must contain a rule that sets
+    # margin-left on .sphinxsidebar to something other than -100%.
+    assert ".sphinxsidebar" in css
+    # Verify we're overriding the float and margin-left offscreen trick.
+    # Look for margin-left: 0 or margin-left: unset or float: none.
+    import re
+    has_override = bool(
+        re.search(
+            r"\.sphinxsidebar\s*\{[^}]*(margin-left:\s*(0|unset|auto)|float:\s*none)[^}]*\}",
+            css,
+        )
+    )
+    assert has_override, "CSS must override .sphinxsidebar's float/margin-left offscreen trick"

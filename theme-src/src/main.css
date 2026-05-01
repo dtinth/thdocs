@@ -1,3 +1,22 @@
+/* Neutralize basic.css's float-and-pull-back sidebar layout (specificity (0,1,1),
+   loaded earlier in the cascade) by matching its `div.tag` form and adding `html`. */
+html div.sphinxsidebar {
+  float: none;
+  width: auto;
+  margin: 0;
+}
+
+html div.sphinxsidebarwrapper {
+  width: auto;
+  margin: 0;
+}
+
+html div.document {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  gap: 1rem;
+}
+
 @import "tailwindcss";
 @source "../../src/thdocs/theme/thdocs/**/*.html";
 @plugin "@tailwindcss/typography";
@@ -8,6 +27,12 @@
   --color-thdocs-border: #454443;
   --color-thdocs-accent: #bbeeff;
   --color-thdocs-sidebar: #252423;
+}
+
+@layer base {
+  .bodywrapper {
+    min-width: 0;
+  }
 }
 
 @layer components {
