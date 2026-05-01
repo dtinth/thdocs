@@ -266,4 +266,29 @@ html div.documentwrapper {
   .thdocs-tab-panel[hidden] {
     display: none !important;
   }
+  .thdocs-toc-toggle {
+    display: inline-block;
+    width: 1.2em;
+    height: 1.2em;
+    padding: 0;
+    margin: 0 0.25em 0 -1.2em;
+    background: none;
+    border: 0;
+    color: var(--color-thdocs-muted);
+    cursor: pointer;
+    font: inherit;
+    vertical-align: text-bottom;
+    transition: transform 0.15s ease-out;
+  }
+  .thdocs-toc-toggle::before {
+    content: "▸";
+    display: inline-block;
+    transition: transform 0.15s ease-out;
+  }
+  .thdocs-toc-toggle[aria-expanded="true"]::before {
+    transform: rotate(90deg);
+  }
+  .thdocs-toc-toggle[aria-expanded="false"] ~ ul {
+    display: none;
+  }
 }

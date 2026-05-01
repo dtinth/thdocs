@@ -473,3 +473,41 @@ def test_bundled_docs_project_builds(monkeypatch) -> None:
     assert "<table" in ks_content, "Kitchen sink must contain a table"
     assert "<details" in ks_content, "Kitchen sink must contain a details/summary block"
     assert "<kbd" in ks_content, "Kitchen sink must contain a <kbd> element"
+
+
+def test_toctree_toggle_js_is_shipped(tmp_path: Path, monkeypatch) -> None:
+    """The toctree collapse toggle functionality must be compiled into thdocs.js."""
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+
+    js = (tmp_path / "_build" / "html" / "_static" / "thdocs.js").read_text(
+        encoding="utf-8"
+    )
+
+    # The JS must contain the toggle button class and aria-expanded attribute references.
+    assert "thdocs-toc-toggle" in js, "JS must contain thdocs-toc-toggle class"
+    assert "aria-expanded" in js, "JS must contain aria-expanded attribute"
+
+
+def test_toctree_collapsed_by_default_via_css(tmp_path: Path, monkeypatch) -> None:
+    """The toctree collapse CSS must hide nested lists when parent is collapsed."""
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+
+    css = (tmp_path / "_build" / "html" / "_static" / "thdocs.css").read_text(
+        encoding="utf-8"
+    )
+
+    # The CSS must contain a rule that hides collapsed children.
+    # Look for aria-expanded=false selector paired with display:none (minified).
+    import re
+    has_collapse_css = bool(
+        re.search(r'aria-expanded[=\s]*false[^}]*display\s*:\s*none', css)
+    ) or bool(
+        re.search(r'aria-expanded=false[^}]*~[^}]*ul[^}]*display', css)
+    )
+    assert (
+        has_collapse_css
+    ), "CSS must hide nested <ul> when parent is collapsed (aria-expanded=false with display:none)"
