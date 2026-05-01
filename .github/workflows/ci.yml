@@ -14,7 +14,9 @@ jobs:
       - uses: jdx/mise-action@v2
 
       - name: Enable corepack
-        run: corepack enable
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.33.2 --activate
 
       - name: Install Python dependencies
         run: uv sync
