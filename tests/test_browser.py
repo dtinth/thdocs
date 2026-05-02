@@ -342,6 +342,112 @@ async def test_focus_memory_restores_after_navigation(built_project: Path):
 
 
 @pytest.mark.asyncio
+async def test_tree_component_renders_in_sidebar(built_project: Path):
+    """Test that <thdocs-tree> component renders in sidebar with navigation items."""
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+
+        file_url = f"file://{(built_project / 'index.html').absolute()}"
+        await page.goto(file_url, wait_until="domcontentloaded")
+        await asyncio.sleep(0.5)  # Wait for tree component to load and render
+
+        # Tree component should exist in the sidebar
+        tree = await page.query_selector("thdocs-tree")
+        assert tree is not None, "<thdocs-tree> component not found in sidebar"
+
+        # Tree should have rendered items (should see .tree-item elements)
+        items = await page.query_selector_all("thdocs-tree .tree-item")
+        assert len(items) > 0, "No tree items rendered"
+
+        # Should have page links (with href)
+        page_links = await page.query_selector_all("thdocs-tree .tree-link")
+        assert len(page_links) > 0, "No page links found in tree"
+
+        # At least one link should be to guide.html
+        guide_link = await page.query_selector('thdocs-tree a[href*="guide.html"]')
+        assert guide_link is not None, "Expected guide.html link not found in tree"
+
+        await page.close()
+        await browser.close()
+
+
+@pytest.mark.asyncio
+async def test_tree_component_works_at_nested_path(built_project: Path):
+    """Test that tree component resolves toctree.json correctly at nested paths (e.g., adr/)."""
+    # Create a nested project with an adr/ subdirectory
+    adr_dir = built_project.parent / "nested_project" / "docs" / "adr"
+    adr_dir.mkdir(parents=True, exist_ok=True)
+
+    # Build a project with nested docs
+    index_md = (
+        "# Main\n"
+        "\n"
+        "```{toctree}\n"
+        ":caption: Topics\n"
+        "topic\n"
+        "adr/index\n"
+        "```\n"
+    )
+    topic_md = "# Topic\n\nContent"
+    adr_index_md = (
+        "# ADR\n"
+        "\n"
+        "```{toctree}\n"
+        "adr-001\n"
+        "```\n"
+    )
+    adr_001_md = "# ADR 001\n\nContent"
+
+    nested_project = built_project.parent / "nested_project"
+    (nested_project / "thdocs.toml").write_text('[site]\ntitle = "Nested"\n')
+    docs_dir = nested_project / "docs"
+    docs_dir.mkdir(exist_ok=True)
+    (docs_dir / "index.md").write_text(index_md)
+    (docs_dir / "topic.md").write_text(topic_md)
+    (docs_dir / "adr" / "index.md").write_text(adr_index_md)
+    (docs_dir / "adr" / "adr-001.md").write_text(adr_001_md)
+
+    # Import here to avoid circular dependency
+    from pathlib import Path
+    import sys
+    import os
+
+    orig_cwd = os.getcwd()
+    try:
+        os.chdir(nested_project)
+        exit_code = main(["build"])
+        assert exit_code == 0, "Nested project build failed"
+    finally:
+        os.chdir(orig_cwd)
+
+    html_dir = nested_project / "_build" / "html"
+
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+
+        # Test at root level (index.html)
+        file_url = f"file://{(html_dir / 'index.html').absolute()}"
+        await page.goto(file_url, wait_until="domcontentloaded")
+        await asyncio.sleep(0.5)
+
+        tree = await page.query_selector("thdocs-tree")
+        assert tree is not None, "Tree not found at root level"
+
+        # Test at nested level (adr/index.html)
+        file_url_nested = f"file://{(html_dir / 'adr' / 'index.html').absolute()}"
+        await page.goto(file_url_nested, wait_until="domcontentloaded")
+        await asyncio.sleep(0.5)
+
+        tree_nested = await page.query_selector("thdocs-tree")
+        assert tree_nested is not None, "Tree not found at nested level (adr/)"
+
+        await page.close()
+        await browser.close()
+
+
+@pytest.mark.asyncio
 async def test_scrollspy_marks_active_toc_link(built_project: Path):
     """Test that scrollspy marks the current section link in the page TOC."""
     async with async_playwright() as p:

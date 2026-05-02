@@ -1,4 +1,17 @@
 {%- extends "basic/layout.html" %}
+{# Skip basic.css — thdocs.css provides all needed styles #}
+{%- block css %}
+    {%- for css in css_files %}
+      {%- set css_name = css|attr("filename") or css %}
+      {%- if 'basic.css' not in css_name|string %}
+        {%- if css|attr("filename") %}
+    {{ css_tag(css) }}
+        {%- else %}
+    <link rel="stylesheet" href="{{ pathto(css, 1)|e }}" type="text/css" />
+        {%- endif %}
+      {%- endif %}
+    {%- endfor %}
+{%- endblock %}
 {%- block extrahead -%}
   {{ super() }}
   <meta name="generator" content="thdocs">
@@ -6,6 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/comic-mono@0.0.1/index.css">
+  <script src="{{ pathto('_static/toctree.js', 1) }}"></script>
 {%- endblock %}
 {%- block header %}
 <header class="thdocs-header">

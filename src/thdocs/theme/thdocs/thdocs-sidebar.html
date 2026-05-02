@@ -5,7 +5,7 @@
     <button type="button" role="tab" data-tab="search" aria-selected="false">Search</button>
   </nav>
   <div class="thdocs-tab-panel" data-panel="contents" role="tabpanel">
-    {{ toctree(includehidden=true, maxdepth=-1, collapse=false) }}
+    <thdocs-tree id="toctree-root"></thdocs-tree>
   </div>
   <div class="thdocs-tab-panel" data-panel="index" role="tabpanel" hidden>
     {# populated in a later cycle #}

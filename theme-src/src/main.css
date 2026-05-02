@@ -555,4 +555,76 @@ main.prose {
   .thdocs-tab-panel ul ul {
     padding-left: 1rem;
   }
+
+  /* thdocs-tree component */
+  thdocs-tree {
+    display: block;
+  }
+  thdocs-tree ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  thdocs-tree .tree-children {
+    padding-left: 1rem;
+  }
+  thdocs-tree .tree-row {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0;
+  }
+  thdocs-tree .tree-icon {
+    flex: none;
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    padding: 0;
+    background-color: currentColor;
+    border: 0;
+    color: #8b8685;
+    transition: color 0.15s ease;
+  }
+  thdocs-tree button.tree-icon {
+    cursor: pointer;
+  }
+  thdocs-tree button.tree-icon:hover {
+    color: var(--color-thdocs-text);
+  }
+  thdocs-tree .tree-icon--book-closed {
+    -webkit-mask: url("https://api.iconify.design/lucide/book.svg") no-repeat center / contain;
+            mask: url("https://api.iconify.design/lucide/book.svg") no-repeat center / contain;
+  }
+  thdocs-tree .tree-icon--book-open {
+    -webkit-mask: url("https://api.iconify.design/lucide/book-open.svg") no-repeat center / contain;
+            mask: url("https://api.iconify.design/lucide/book-open.svg") no-repeat center / contain;
+  }
+  thdocs-tree .tree-icon--page {
+    -webkit-mask: url("https://api.iconify.design/lucide/file-text.svg") no-repeat center / contain;
+            mask: url("https://api.iconify.design/lucide/file-text.svg") no-repeat center / contain;
+  }
+  thdocs-tree .tree-section-title {
+    font-weight: 600;
+    color: var(--color-thdocs-text);
+    user-select: none;
+  }
+  thdocs-tree .tree-link {
+    flex: 1;
+    display: block;
+    padding: 0.125rem 0.25rem;
+    color: var(--color-thdocs-accent-yellow);
+    text-decoration: none;
+    border-radius: 2px;
+    line-height: 1.4;
+  }
+  thdocs-tree .tree-link:visited {
+    color: #feb;
+  }
+  thdocs-tree .tree-link:hover {
+    background: rgba(255,255,255,0.05);
+  }
+  thdocs-tree .tree-link.current {
+    color: var(--color-thdocs-accent);
+    background: rgba(255,255,255,0.05);
+  }
 }

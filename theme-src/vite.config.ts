@@ -7,6 +7,7 @@ export default defineConfig({
   build: {
     outDir: resolve(__dirname, "../src/thdocs/static"),
     emptyOutDir: false,
+    sourcemap: true,
     rollupOptions: {
       input: { thdocs: resolve(__dirname, "src/main.ts") },
       output: {

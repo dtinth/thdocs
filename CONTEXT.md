@@ -34,6 +34,13 @@ comprehensive feature set, well-considered structure.
   `<ar-header>`, `<ar-nav>`, `<ar-outline>`). For thdocs, shell is a
   **visual reference**, not a runtime dependency: we read its CSS, copy
   tokens and prose treatments, and adapt them to fit Sphinx's HTML shape.
+- **toctree.json** — a JSON file generated at build time (by a Sphinx
+  extension) containing the full tree structure from all `{toctree}`
+  directives. Consumed by the `<thdocs-tree>` Lit component to render the
+  interactive sidebar Contents tab.
+- **`<tdhocs-tree>`** — a Lit web component that fetches `toctree.json` and
+  renders the interactive sidebar tree (Contents tab). Handles expand/collapse
+  state, scroll persistence, focus management, and keyboard navigation.
 
 ## Shape
 
@@ -129,7 +136,16 @@ No `check` or `clean` in v1.
 CHM-inspired chrome — the left sidebar has **three tabs**, for CHM
 nostalgia:
 
-1. **Contents** — tree-style TOC, server-rendered from `{toctree}`.
+1. **Contents** — interactive tree-style TOC. Sphinx generates a JSON file
+   (`toctree.json`) containing the full tree structure (sourced from
+   `{toctree}` directives). The sidebar markup is minimal (current-page nav
+   only, like normal Sphinx). A Lit-based `<thdocs-tree>` component fetches
+   the JSON and renders the full interactive tree client-side. This approach
+   (a) keeps initial HTML lean, (b) avoids duplicating the tree in markup,
+   (c) gives full control over tree styling and behavior (collapse/expand,
+   scroll persistence, focus management), and (d) degrades gracefully to
+   Sphinx's default nav if JS is unavailable.
+
 2. **Index** — alphabetical index, server-rendered from `{index}`
    directives (Sphinx's `genindex`), inlined into the sidebar by the theme.
 3. **Search** — full-text search powered by **Pagefind**. Run as a

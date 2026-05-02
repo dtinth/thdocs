@@ -9,7 +9,7 @@ project = _cfg["site"]["title"]
 author = _cfg["site"].get("author", "")
 release = _cfg["site"].get("version", "")
 
-extensions = ["myst_parser"]
+extensions = ["myst_parser", "thdocs.sphinx.toctree_json"]
 master_doc = "index"
 exclude_patterns = ["_build"]
 html_theme = "thdocs"

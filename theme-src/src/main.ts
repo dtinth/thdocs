@@ -1,4 +1,5 @@
 import "./main.css";
+import "./tree";
 
 function wireSidebarTabs(root: ParentNode = document): void {
   const sidebars = root.querySelectorAll<HTMLElement>(".thdocs-sidebar");
@@ -318,14 +319,12 @@ if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     wireSidebarTabs();
     setupScrollspy();
-    setupToctreeCollapse();
-    setupToctreeNavMemory();
+    // Tree is now handled by <thdocs-tree> component
     setupMobileSidebar();
   });
 } else {
   wireSidebarTabs();
   setupScrollspy();
-  setupToctreeCollapse();
-  setupToctreeNavMemory();
+  // Tree is now handled by <thdocs-tree> component
   setupMobileSidebar();
 }
