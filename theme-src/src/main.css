@@ -87,7 +87,6 @@ html div.sphinxsidebar {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 1rem;
 }
 
 /* Outline (right) */
@@ -448,6 +447,7 @@ main.prose {
     flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
+    padding: 1rem;
   }
   .thdocs-tabs {
     display: flex;
