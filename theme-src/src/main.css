@@ -30,7 +30,7 @@ html div.documentwrapper {
   height: 58px;
   background: #090807;
   border-bottom: 1px solid #454443;
-  z-index: 50;
+  z-index: 10;
   display: flex;
   align-items: center;
   padding: 0 1rem;
@@ -73,7 +73,7 @@ html div.documentwrapper {
 /* Sidebar (left) */
 html div.sphinxsidebar {
   position: fixed;
-  top: 58px;
+  top: 57px;
   left: 0;
   bottom: 0;
   width: 320px;
@@ -454,6 +454,8 @@ main.prose {
     gap: 0.25rem;
     border-bottom: 1px solid var(--color-thdocs-border);
     flex-shrink: 0;
+    background: #090807;
+    padding-left: 0.5rem;
   }
   .thdocs-tabs button {
     background: none;
@@ -465,7 +467,11 @@ main.prose {
   }
   .thdocs-tabs button[aria-selected="true"] {
     color: var(--color-thdocs-text);
-    border-bottom: 2px solid var(--color-thdocs-accent);
+    background: linear-gradient(to bottom, #353433, #252423);
+    border: 1px solid #454443;
+    border-radius: 4px 4px 0 0;
+    border-bottom-width: 0;
+    margin-bottom: -1px;
   }
   .thdocs-tab-panel[hidden] {
     display: none !important;
