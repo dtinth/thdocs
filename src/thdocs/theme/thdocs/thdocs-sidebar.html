@@ -5,7 +5,10 @@
     <button type="button" role="tab" data-tab="search" aria-selected="false">Search</button>
   </nav>
   <div class="thdocs-tab-panel" data-panel="contents" role="tabpanel">
-    <thdocs-tree id="toctree-root"></thdocs-tree>
+    <thdocs-tree id="toctree-root">
+      {# Server-rendered fallback for no-JS / pre-hydration; hidden by CSS once hydrated #}
+      <div class="thdocs-fallback-tree">{{ toctree() }}</div>
+    </thdocs-tree>
   </div>
   <div class="thdocs-tab-panel" data-panel="index" role="tabpanel" hidden>
     {# populated in a later cycle #}

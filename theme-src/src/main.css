@@ -560,6 +560,10 @@ main.prose {
   thdocs-tree {
     display: block;
   }
+  /* When hydrated, hide the server-rendered fallback */
+  thdocs-tree.thdocs-tree--hydrated .thdocs-fallback-tree {
+    display: none;
+  }
   thdocs-tree ul {
     list-style: none;
     padding: 0;
@@ -590,6 +594,21 @@ main.prose {
   }
   thdocs-tree button.tree-icon:hover {
     color: var(--color-thdocs-text);
+  }
+  thdocs-tree button.tree-icon:focus-visible {
+    color: var(--color-thdocs-text);
+    outline: 2px solid var(--color-thdocs-accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  thdocs-tree .tree-link:focus-visible {
+    outline: 2px solid var(--color-thdocs-accent);
+    outline-offset: -2px;
+  }
+  thdocs-tree .tree-section-title:focus-visible {
+    outline: 2px solid var(--color-thdocs-accent);
+    outline-offset: 2px;
+    border-radius: 2px;
   }
   thdocs-tree .tree-icon--book-closed {
     -webkit-mask: url("https://api.iconify.design/lucide/book.svg") no-repeat center / contain;

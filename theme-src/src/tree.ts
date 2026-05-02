@@ -20,6 +20,11 @@ class ThdocsTree extends HTMLElement {
 
   connectedCallback() {
     try {
+      // Kill switch for testing the no-JS / fallback-render path
+      if (sessionStorage.getItem("DISABLE_THDOCS_TREE")) {
+        console.log("[thdocs-tree] Disabled via sessionStorage.DISABLE_THDOCS_TREE — leaving fallback content");
+        return;
+      }
       console.log("[thdocs-tree] Initializing...");
       this.loadData();
     } catch (error) {
@@ -144,13 +149,15 @@ class ThdocsTree extends HTMLElement {
     this.expanded.set(nodeId, !current);
     this.saveState();
     this.render();
+    // Re-render destroyed the focused button — restore focus on the new one
+    const btn = this.querySelector<HTMLButtonElement>(
+      `button.tree-icon[data-node-id="${CSS.escape(nodeId)}"]`,
+    );
+    if (btn) btn.focus({ preventScroll: true });
   }
 
   private render() {
-    if (!this.data) {
-      this.innerHTML = "<p>Loading...</p>";
-      return;
-    }
+    if (!this.data) return;
 
     const ul = document.createElement("ul");
     ul.className = "tree";
@@ -159,8 +166,15 @@ class ThdocsTree extends HTMLElement {
       ul.appendChild(this.renderNode(item));
     }
 
-    this.innerHTML = "";
-    this.appendChild(ul);
+    // Replace previous render if any; otherwise append alongside the fallback
+    // and mark the host so CSS can hide the fallback.
+    const existing = this.querySelector(":scope > ul.tree");
+    if (existing) {
+      existing.replaceWith(ul);
+    } else {
+      this.appendChild(ul);
+      this.classList.add("thdocs-tree--hydrated");
+    }
   }
 
   private renderNode(node: TreeNode): HTMLElement {
@@ -180,6 +194,7 @@ class ThdocsTree extends HTMLElement {
       btn.className = `tree-icon tree-icon--book ${isExpanded ? "tree-icon--book-open" : "tree-icon--book-closed"}`;
       btn.setAttribute("aria-expanded", isExpanded ? "true" : "false");
       btn.setAttribute("aria-label", "Toggle");
+      btn.dataset.nodeId = node.id;
       btn.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
