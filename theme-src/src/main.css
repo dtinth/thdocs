@@ -447,13 +447,12 @@ main.prose {
     flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
-    padding: 1rem;
+    padding: 0.5rem;
   }
   .thdocs-tabs {
     display: flex;
     gap: 0.25rem;
     border-bottom: 1px solid var(--color-thdocs-border);
-    margin-bottom: 1rem;
     flex-shrink: 0;
   }
   .thdocs-tabs button {
