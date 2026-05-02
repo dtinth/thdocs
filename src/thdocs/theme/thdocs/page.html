@@ -1,6 +1,29 @@
 {%- extends "layout.html" %}
 {%- block body %}
+<nav class="thdocs-breadcrumbs" aria-label="Breadcrumbs">
+  <ul>
+    <li><a href="{{ pathto(root_doc)|e }}">{{ shorttitle|e }}</a></li>
+    {%- for parent in parents %}
+    <li><a href="{{ parent.link|e }}">{{ parent.title }}</a></li>
+    {%- endfor %}
+    <li aria-current="page">{{ title }}</li>
+  </ul>
+</nav>
 <main class="prose">
 {{ body }}
 </main>
+<nav class="thdocs-prev-next" aria-label="Pagination">
+  {%- if prev %}
+  <a href="{{ prev.link|e }}" class="thdocs-prev">
+    <div class="thdocs-prev-next-label">Previous</div>
+    <div class="thdocs-prev-next-title">{{ prev.title|striptags|e }}</div>
+  </a>
+  {%- endif %}
+  {%- if next %}
+  <a href="{{ next.link|e }}" class="thdocs-next">
+    <div class="thdocs-prev-next-label">Next</div>
+    <div class="thdocs-prev-next-title">{{ next.title|striptags|e }}</div>
+  </a>
+  {%- endif %}
+</nav>
 {%- endblock %}

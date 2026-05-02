@@ -64,42 +64,52 @@ function setupToctreeCollapse(): void {
     } catch {}
   }
 
-  // Initialize toggles on each LI that has a child UL
-  for (const li of allLis) {
-    const childUl = li.querySelector<HTMLElement>(":scope > ul");
-    if (!childUl) continue;
+  // Chevron SVG icon
+  const chevronSvg =
+    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>';
 
-    // Create toggle button
+  // Make section captions (e.g. "User Guide", "Internals") collapsible
+  const captions = contentsPanel.querySelectorAll<HTMLElement>("p.caption");
+  for (const caption of captions) {
+    const nextUl = caption.nextElementSibling as HTMLElement | null;
+    if (!nextUl || nextUl.tagName !== "UL") continue;
+
+    const key = caption.textContent || "";
+    const shouldExpand = persistedSet.has(key);
+
+    // Wrap caption + ul together
+    const wrapper = document.createElement("div");
+    wrapper.className = "thdocs-toc-section";
+
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "thdocs-toc-toggle";
-    btn.setAttribute("aria-label", "Toggle");
-
-    // Determine if should be expanded
-    const link = li.querySelector<HTMLElement>("a");
-    const key = link ? link.href : li.textContent || "";
-    const shouldExpand =
-      currentAncestors.has(li) || persistedSet.has(key);
-
+    btn.setAttribute("aria-label", "Toggle section");
+    btn.innerHTML = chevronSvg;
     btn.setAttribute("aria-expanded", shouldExpand ? "true" : "false");
 
-    // Insert button before the link
-    const firstChild = li.firstChild;
-    if (firstChild) {
-      li.insertBefore(btn, firstChild);
-    } else {
-      li.insertBefore(btn, childUl);
+    // Insert wrapper before caption while caption is still in its original parent
+    caption.parentElement!.insertBefore(wrapper, caption);
+
+    const row = document.createElement("div");
+    row.className = "thdocs-toc-row thdocs-toc-caption-row";
+    row.appendChild(btn);
+    row.appendChild(caption);
+
+    wrapper.appendChild(row);
+    wrapper.appendChild(nextUl);
+
+    if (!shouldExpand) {
+      nextUl.style.display = "none";
     }
 
-    // Wire toggle handler
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
       const isExpanded = btn.getAttribute("aria-expanded") === "true";
-      btn.setAttribute("aria-expanded", isExpanded ? "false" : "true");
-
-      // Persist to sessionStorage
       const newExpanded = !isExpanded;
+      btn.setAttribute("aria-expanded", newExpanded ? "true" : "false");
+      nextUl.style.display = newExpanded ? "" : "none";
       if (newExpanded) {
         persistedSet.add(key);
       } else {
@@ -110,6 +120,64 @@ function setupToctreeCollapse(): void {
         JSON.stringify(Array.from(persistedSet))
       );
     });
+  }
+
+  // Initialize toggles on each LI that has a child UL
+  for (const li of allLis) {
+    const childUl = li.querySelector<HTMLElement>(":scope > ul");
+    if (!childUl) continue;
+
+    const link = li.querySelector<HTMLAnchorElement>(":scope > a");
+    if (!link) continue;
+
+    // Create toggle button
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "thdocs-toc-toggle";
+    btn.setAttribute("aria-label", "Toggle");
+    btn.innerHTML = chevronSvg;
+
+    // Determine if should be expanded
+    const key = link.href;
+    const shouldExpand =
+      currentAncestors.has(li) || persistedSet.has(key);
+
+    btn.setAttribute("aria-expanded", shouldExpand ? "true" : "false");
+
+    // Create a flex row wrapper for toggle + link
+    const row = document.createElement("div");
+    row.className = "thdocs-toc-row";
+
+    // Move the link into the row, and insert the row where the link was
+    li.insertBefore(row, link);
+    row.appendChild(btn);
+    row.appendChild(link);
+
+    // Wire toggle handler
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const isExpanded = btn.getAttribute("aria-expanded") === "true";
+      const newExpanded = !isExpanded;
+      btn.setAttribute("aria-expanded", newExpanded ? "true" : "false");
+      childUl.style.display = newExpanded ? "" : "none";
+
+      // Persist to sessionStorage
+      if (newExpanded) {
+        persistedSet.add(key);
+      } else {
+        persistedSet.delete(key);
+      }
+      sessionStorage.setItem(
+        "thdocs-toc-expanded",
+        JSON.stringify(Array.from(persistedSet))
+      );
+    });
+
+    // Apply initial collapsed state
+    if (!shouldExpand) {
+      childUl.style.display = "none";
+    }
   }
 }
 
@@ -231,16 +299,35 @@ function setupToctreeNavMemory(): void {
   }
 }
 
+function setupMobileSidebar(): void {
+  const btn = document.querySelector<HTMLButtonElement>(".thdocs-header-menu-btn");
+  const sidebar = document.querySelector<HTMLElement>("div.sphinxsidebar");
+  if (!btn || !sidebar) return;
+
+  btn.addEventListener("click", () => {
+    const isOpen = sidebar.classList.contains("thdocs-sidebar--visible");
+    if (isOpen) {
+      sidebar.classList.remove("thdocs-sidebar--visible");
+      btn.setAttribute("aria-expanded", "false");
+    } else {
+      sidebar.classList.add("thdocs-sidebar--visible");
+      btn.setAttribute("aria-expanded", "true");
+    }
+  });
+}
+
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     wireSidebarTabs();
     setupScrollspy();
     setupToctreeCollapse();
     setupToctreeNavMemory();
+    setupMobileSidebar();
   });
 } else {
   wireSidebarTabs();
   setupScrollspy();
   setupToctreeCollapse();
   setupToctreeNavMemory();
+  setupMobileSidebar();
 }

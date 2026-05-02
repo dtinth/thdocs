@@ -374,8 +374,8 @@ def test_prose_dark_theme_applied(tmp_path: Path, monkeypatch) -> None:
     ), "Prose links must be yellow (#ffffbb)"
 
 
-def test_sidebar_renders_in_left_grid_column(tmp_path: Path, monkeypatch) -> None:
-    """The sidebar must be positioned in grid column 1 (left) via CSS override."""
+def test_sidebar_is_fixed_to_left(tmp_path: Path, monkeypatch) -> None:
+    """The sidebar must be fixed positioned on the left side."""
     _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
     monkeypatch.chdir(tmp_path)
     assert main(["build"]) == 0
@@ -383,16 +383,21 @@ def test_sidebar_renders_in_left_grid_column(tmp_path: Path, monkeypatch) -> Non
     css = (tmp_path / "_build" / "html" / "_static" / "thdocs.css").read_text(
         encoding="utf-8"
     )
-    # The CSS must contain a rule that places .sphinxsidebar in grid-column: 1
+    # The CSS must fix the sidebar to the left viewport edge
     assert ".sphinxsidebar" in css
     import re
-    has_grid_column_1 = bool(
+    has_fixed_left = bool(
         re.search(
-            r"\.sphinxsidebar\s*\{[^}]*grid-column\s*:\s*1[^}]*\}",
+            r"\.sphinxsidebar\s*\{[^}]*position\s*:\s*fixed[^}]*\}",
+            css,
+        )
+    ) and bool(
+        re.search(
+            r"\.sphinxsidebar\s*\{[^}]*left\s*:\s*0[^}]*\}",
             css,
         )
     )
-    assert has_grid_column_1, "CSS must set .sphinxsidebar to grid-column: 1"
+    assert has_fixed_left, "CSS must set .sphinxsidebar to position: fixed with left: 0"
 
 
 def test_page_toc_aside_renders_with_h2_links(tmp_path: Path, monkeypatch) -> None:
@@ -490,27 +495,18 @@ def test_toctree_toggle_js_is_shipped(tmp_path: Path, monkeypatch) -> None:
     assert "aria-expanded" in js, "JS must contain aria-expanded attribute"
 
 
-def test_toctree_collapsed_by_default_via_css(tmp_path: Path, monkeypatch) -> None:
-    """The toctree collapse CSS must hide nested lists when parent is collapsed."""
+def test_toctree_collapsed_by_default_via_js(tmp_path: Path, monkeypatch) -> None:
+    """The toctree collapse JS must hide nested lists when parent is collapsed."""
     _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
     monkeypatch.chdir(tmp_path)
     assert main(["build"]) == 0
 
-    css = (tmp_path / "_build" / "html" / "_static" / "thdocs.css").read_text(
+    js = (tmp_path / "_build" / "html" / "_static" / "thdocs.js").read_text(
         encoding="utf-8"
     )
 
-    # The CSS must contain a rule that hides collapsed children.
-    # Look for aria-expanded=false selector paired with display:none (minified).
-    import re
-    has_collapse_css = bool(
-        re.search(r'aria-expanded[=\s]*false[^}]*display\s*:\s*none', css)
-    ) or bool(
-        re.search(r'aria-expanded=false[^}]*~[^}]*ul[^}]*display', css)
-    )
-    assert (
-        has_collapse_css
-    ), "CSS must hide nested <ul> when parent is collapsed (aria-expanded=false with display:none)"
+    # The JS must set display:none on child <ul> when toggle is collapsed.
+    assert "style.display" in js, "JS must hide nested <ul> via style.display"
 
 
 def test_toctree_nav_memory_js_is_shipped(tmp_path: Path, monkeypatch) -> None:
