@@ -59,6 +59,10 @@ def _build_tree_item(docname: str | tuple[str, str], env: BuildEnvironment | Non
     else:
         title = None
 
+    # Prefer Sphinx's parsed page title (env.titles[docname] is the H1 node)
+    if not title and env and docname in env.titles:
+        title = env.titles[docname].astext()
+
     item = {
         "id": docname.replace("/", "-"),
         "title": title or _docname_to_title(docname),
