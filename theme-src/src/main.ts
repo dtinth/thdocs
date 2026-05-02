@@ -33,150 +33,148 @@ function setupToctreeCollapse(): void {
   );
   if (!contentsPanel) return;
 
-  const allLis = contentsPanel.querySelectorAll<HTMLElement>(
-    "li.toctree-l1, li.toctree-l2, li.toctree-l3, li.toctree-l4"
-  );
+  // ── SVG icons ──
+  const closedBookSvg =
+    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 13.5a2 2 0 0 1 2-2H14"/><path d="M4 1h10v13H4a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2z"/><line x1="9" y1="1" x2="9" y2="11"/></svg>';
+  const openBookSvg =
+    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 2h7v12H3a2 2 0 0 1-2-2V2z"/><path d="M15 2H8v12h5a2 2 0 0 0 2-2V2z"/><line x1="8" y1="2" x2="8" y2="14"/></svg>';
+  const docSvg =
+    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5l-3-4z"/><path d="M10 1v4h4"/><line x1="5" y1="10" x2="11" y2="10"/></svg>';
 
-  // Find current page and its ancestors
-  const currentAncestors = new Set<HTMLElement>();
-  const currentLink = contentsPanel.querySelector<HTMLElement>(
-    "a.reference.internal.current"
-  );
-  if (currentLink) {
-    let ancestor: HTMLElement | null = currentLink.parentElement;
-    while (ancestor && ancestor !== contentsPanel) {
-      if (ancestor.tagName === "LI") {
-        currentAncestors.add(ancestor);
+  // ── Phase 1: Strip fragment-only links (anchors within pages) ──
+  for (const li of Array.from(contentsPanel.querySelectorAll<HTMLElement>("li"))) {
+    const link = li.querySelector<HTMLAnchorElement>(":scope > a");
+    if (!link) continue;
+    const href = link.getAttribute("href") || "";
+    // Link is a fragment anchor (e.g. getting-started.html#installation, or just #something)
+    if (href.includes("#") && !href.endsWith("#")) {
+      const parentLi = li.parentElement?.closest("li");
+      li.remove();
+      // Clean up empty UL in parent
+      if (parentLi) {
+        const parentUl = parentLi.querySelector<HTMLElement>(":scope > ul");
+        if (parentUl && !parentUl.hasChildNodes()) parentUl.remove();
       }
-      ancestor = ancestor.parentElement;
     }
   }
 
-  // Load persisted state from sessionStorage
+  // ── Phase 2: Setup icons and collapse ──
+  // Load persisted state
   const persistedSet = new Set<string>();
   const persisted = sessionStorage.getItem("thdocs-toc-expanded");
   if (persisted) {
     try {
       const parsed = JSON.parse(persisted);
-      if (Array.isArray(parsed)) {
-        parsed.forEach((key) => persistedSet.add(key));
-      }
+      if (Array.isArray(parsed)) parsed.forEach((key) => persistedSet.add(key));
     } catch {}
   }
 
-  // Chevron SVG icon
-  const chevronSvg =
-    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>';
+  // Find current page and its ancestors
+  const currentAncestors = new Set<HTMLElement>();
+  const currentLink = contentsPanel.querySelector<HTMLElement>("a.reference.internal.current");
+  if (currentLink) {
+    let ancestor: HTMLElement | null = currentLink.parentElement;
+    while (ancestor && ancestor !== contentsPanel) {
+      if (ancestor.tagName === "LI") currentAncestors.add(ancestor);
+      ancestor = ancestor.parentElement;
+    }
+  }
 
-  // Make section captions (e.g. "User Guide", "Internals") collapsible
-  const captions = contentsPanel.querySelectorAll<HTMLElement>("p.caption");
-  for (const caption of captions) {
+  // Process section captions (e.g. "User Guide", "Internals")
+  for (const caption of Array.from(contentsPanel.querySelectorAll<HTMLElement>("p.caption"))) {
     const nextUl = caption.nextElementSibling as HTMLElement | null;
     if (!nextUl || nextUl.tagName !== "UL") continue;
 
     const key = caption.textContent || "";
     const shouldExpand = persistedSet.has(key);
 
-    // Wrap caption + ul together
     const wrapper = document.createElement("div");
     wrapper.className = "thdocs-toc-section";
 
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = "thdocs-toc-toggle";
-    btn.setAttribute("aria-label", "Toggle section");
-    btn.innerHTML = chevronSvg;
+    btn.className = "thdocs-toc-toggle thdocs-toc-toggle--caption";
+    btn.innerHTML = shouldExpand ? openBookSvg : closedBookSvg;
     btn.setAttribute("aria-expanded", shouldExpand ? "true" : "false");
+    btn.setAttribute("aria-label", "Toggle section");
 
-    // Insert wrapper before caption while caption is still in its original parent
     caption.parentElement!.insertBefore(wrapper, caption);
-
     const row = document.createElement("div");
     row.className = "thdocs-toc-row thdocs-toc-caption-row";
     row.appendChild(btn);
     row.appendChild(caption);
-
     wrapper.appendChild(row);
     wrapper.appendChild(nextUl);
 
-    if (!shouldExpand) {
-      nextUl.style.display = "none";
-    }
+    if (!shouldExpand) nextUl.style.display = "none";
 
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      const isExpanded = btn.getAttribute("aria-expanded") === "true";
-      const newExpanded = !isExpanded;
+      const expanded = btn.getAttribute("aria-expanded") === "true";
+      const newExpanded = !expanded;
       btn.setAttribute("aria-expanded", newExpanded ? "true" : "false");
+      btn.innerHTML = newExpanded ? openBookSvg : closedBookSvg;
       nextUl.style.display = newExpanded ? "" : "none";
-      if (newExpanded) {
-        persistedSet.add(key);
-      } else {
-        persistedSet.delete(key);
-      }
-      sessionStorage.setItem(
-        "thdocs-toc-expanded",
-        JSON.stringify(Array.from(persistedSet))
-      );
+      if (newExpanded) persistedSet.add(key);
+      else persistedSet.delete(key);
+      sessionStorage.setItem("thdocs-toc-expanded", JSON.stringify(Array.from(persistedSet)));
     });
   }
 
-  // Initialize toggles on each LI that has a child UL
-  for (const li of allLis) {
-    const childUl = li.querySelector<HTMLElement>(":scope > ul");
-    if (!childUl) continue;
-
+  // Process LI items (page links)
+  for (const li of Array.from(
+    contentsPanel.querySelectorAll<HTMLElement>("li.toctree-l1, li.toctree-l2, li.toctree-l3, li.toctree-l4")
+  )) {
     const link = li.querySelector<HTMLAnchorElement>(":scope > a");
     if (!link) continue;
 
-    // Create toggle button
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "thdocs-toc-toggle";
-    btn.setAttribute("aria-label", "Toggle");
-    btn.innerHTML = chevronSvg;
+    const childUl = li.querySelector<HTMLElement>(":scope > ul");
+    const hasChildren = childUl !== null;
 
-    // Determine if should be expanded
-    const key = link.href;
-    const shouldExpand =
-      currentAncestors.has(li) || persistedSet.has(key);
+    if (hasChildren) {
+      // Item with children: book icon + toggle
+      const key = link.href;
+      const shouldExpand = currentAncestors.has(li) || persistedSet.has(key);
 
-    btn.setAttribute("aria-expanded", shouldExpand ? "true" : "false");
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "thdocs-toc-toggle thdocs-toc-toggle--page";
+      btn.innerHTML = shouldExpand ? openBookSvg : closedBookSvg;
+      btn.setAttribute("aria-expanded", shouldExpand ? "true" : "false");
+      btn.setAttribute("aria-label", "Toggle");
 
-    // Create a flex row wrapper for toggle + link
-    const row = document.createElement("div");
-    row.className = "thdocs-toc-row";
+      const row = document.createElement("div");
+      row.className = "thdocs-toc-row";
+      li.insertBefore(row, link);
+      row.appendChild(btn);
+      row.appendChild(link);
 
-    // Move the link into the row, and insert the row where the link was
-    li.insertBefore(row, link);
-    row.appendChild(btn);
-    row.appendChild(link);
+      if (!shouldExpand) childUl!.style.display = "none";
 
-    // Wire toggle handler
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const isExpanded = btn.getAttribute("aria-expanded") === "true";
-      const newExpanded = !isExpanded;
-      btn.setAttribute("aria-expanded", newExpanded ? "true" : "false");
-      childUl.style.display = newExpanded ? "" : "none";
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const expanded = btn.getAttribute("aria-expanded") === "true";
+        const newExpanded = !expanded;
+        btn.setAttribute("aria-expanded", newExpanded ? "true" : "false");
+        btn.innerHTML = newExpanded ? openBookSvg : closedBookSvg;
+        childUl!.style.display = newExpanded ? "" : "none";
+        if (newExpanded) persistedSet.add(key);
+        else persistedSet.delete(key);
+        sessionStorage.setItem("thdocs-toc-expanded", JSON.stringify(Array.from(persistedSet)));
+      });
+    } else {
+      // Leaf page: document icon (no toggle)
+      const icon = document.createElement("span");
+      icon.className = "thdocs-toc-icon";
+      icon.innerHTML = docSvg;
 
-      // Persist to sessionStorage
-      if (newExpanded) {
-        persistedSet.add(key);
-      } else {
-        persistedSet.delete(key);
-      }
-      sessionStorage.setItem(
-        "thdocs-toc-expanded",
-        JSON.stringify(Array.from(persistedSet))
-      );
-    });
-
-    // Apply initial collapsed state
-    if (!shouldExpand) {
-      childUl.style.display = "none";
+      const row = document.createElement("div");
+      row.className = "thdocs-toc-row";
+      li.insertBefore(row, link);
+      row.appendChild(icon);
+      row.appendChild(link);
     }
   }
 }
