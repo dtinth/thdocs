@@ -646,4 +646,18 @@ main.prose {
     color: var(--color-thdocs-accent);
     background: rgba(255,255,255,0.05);
   }
+
+  /* Headerlinks (¶ anchors on headings) — basic.css used to style these.
+     !important required to win against the Tailwind Typography .prose a rules. */
+  .prose a.headerlink {
+    color: #8b8685 !important;
+    text-decoration: none !important;
+    visibility: hidden;
+    margin-left: 0.25em;
+    padding: 0 0.25em;
+  }
+  .prose :hover > a.headerlink,
+  .prose a.headerlink:focus-visible {
+    visibility: visible;
+  }
 }
