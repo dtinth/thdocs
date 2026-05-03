@@ -4,6 +4,9 @@ Welcome to thdocs. This guide covers installation, basic project setup, and your
 
 ## Installation
 
+```{index} Installation
+```
+
 Install thdocs from source using `uv`:
 
 ```bash
@@ -51,6 +54,9 @@ The source is pure Markdown (MyST format). Use `{toctree}` directives in `index.
 
 ## Authoring
 
+```{index} Authoring
+```
+
 Write Markdown files in `docs/` using **MyST** syntax:
 
 ```markdown
@@ -77,5 +83,4 @@ See [CLI Reference](cli.md) for build and dev commands.
 ## Next Steps
 
 - Read the [CLI Reference](cli.md) to learn `thdocs build` and `thdocs dev`
-- Explore [Theming](theming.md) to understand how the sidebar works
 - Check the [Kitchen Sink](kitchen-sink.md) to see all supported Markdown constructs

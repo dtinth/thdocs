@@ -4,13 +4,25 @@ This page exercises every renderable construct supported by thdocs and MyST. Use
 
 ## Headings
 
+```{index} Headings
+```
+
 ### Level 3 Heading
 
+```{index} Level 3 Heading
+```
+
 #### Level 4 Heading
+
+```{index} Level 4 Heading
+```
 
 Heading levels h1–h4 are shown above (h1 is the page title).
 
 ## Text Formatting
+
+```{index} Text Formatting
+```
 
 This paragraph demonstrates **bold text**, *italic text*, and `inline code`. You can also combine them: ***bold italic***.
 
@@ -18,7 +30,13 @@ A [link to example.com](https://example.com) and a [link to another page](gettin
 
 ## Lists
 
+```{index} Lists
+```
+
 ### Unordered Lists
+
+```{index} Unordered Lists
+```
 
 - Item one
 - Item two
@@ -28,6 +46,9 @@ A [link to example.com](https://example.com) and a [link to another page](gettin
 
 ### Ordered Lists
 
+```{index} Ordered Lists
+```
+
 1. First step
 2. Second step
    1. Sub-step 2.1
@@ -36,12 +57,18 @@ A [link to example.com](https://example.com) and a [link to another page](gettin
 
 ## Blockquote
 
+```{index} Blockquote
+```
+
 > This is a blockquote. It stands out from the main text and is used to highlight
 > important information, quotes, or tangential notes.
 >
 > Blockquotes can span multiple paragraphs.
 
 ## Code Blocks
+
+```{index} Code Blocks
+```
 
 A Python code block with syntax highlighting:
 
@@ -66,6 +93,9 @@ thdocs build --strict
 
 ## Table
 
+```{index} Table
+```
+
 A table with header and content rows:
 
 | Feature | Supported | Notes |
@@ -76,7 +106,13 @@ A table with header and content rows:
 
 ## Admonitions
 
+```{index} Admonitions
+```
+
 ### Note
+
+```{index} Note
+```
 
 ```{note}
 This is a note admonition. Use notes to provide additional context or helpful information.
@@ -84,11 +120,17 @@ This is a note admonition. Use notes to provide additional context or helpful in
 
 ### Warning
 
+```{index} Warning
+```
+
 ```{warning}
 This is a warning admonition. Use warnings to highlight important cautions or gotchas.
 ```
 
 ## Keyboard Input
+
+```{index} Keyboard Input
+```
 
 To run thdocs, press <kbd>Ctrl</kbd> + <kbd>Enter</kbd> or type:
 
@@ -97,6 +139,9 @@ thdocs dev
 ```
 
 ## Details / Summary
+
+```{index} Details / Summary
+```
 
 <details>
 <summary>Click to expand this details block</summary>
@@ -109,6 +154,9 @@ You can include multiple paragraphs and other elements inside a details block.
 
 ## Images and Figures
 
+```{index} Images and Figures
+```
+
 An image with a caption using a figure element:
 
 ```html
@@ -120,15 +168,24 @@ An image with a caption using a figure element:
 
 ## Horizontal Rule
 
+```{index} Horizontal Rule
+```
+
 A horizontal rule divides sections visually:
 
 ---
 
 ## Superscript and Subscript
 
+```{index} Superscript and Subscript
+```
+
 The chemical formula H<sub>2</sub>O uses subscript. E = mc<sup>2</sup> uses superscript.
 
 ## Summary
+
+```{index} Summary
+```
 
 This page demonstrates:
 

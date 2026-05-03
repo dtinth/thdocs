@@ -8,7 +8,6 @@ Welcome to thdocs—a reusable documentation generator for Markdown projects.
 
 getting-started
 cli
-theming
 kitchen-sink
 ```
 
