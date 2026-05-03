@@ -4,10 +4,7 @@ Welcome to thdocs. This guide covers installation, basic project setup, and your
 
 ## Installation
 
-```{index} Installation
-```
-
-Install thdocs from source using `uv`:
+Install thdocs from source using {index}`uv`:
 
 ```bash
 uv tool install -e . --reinstall
@@ -54,10 +51,7 @@ The source is pure Markdown (MyST format). Use `{toctree}` directives in `index.
 
 ## Authoring
 
-```{index} Authoring
-```
-
-Write Markdown files in `docs/` using **MyST** syntax:
+Write Markdown files in `docs/` using {index}`MyST` syntax:
 
 ```markdown
 # My Page

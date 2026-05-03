@@ -4,39 +4,27 @@ This page exercises every renderable construct supported by thdocs and MyST. Use
 
 ## Headings
 
-```{index} Headings
-```
+Heading levels {index}`Headings` h1–h4 are shown below (h1 is the page title).
 
 ### Level 3 Heading
 
-```{index} Level 3 Heading
-```
+This is a {index}`Level 3 Heading` for demonstration.
 
 #### Level 4 Heading
 
-```{index} Level 4 Heading
-```
-
-Heading levels h1–h4 are shown above (h1 is the page title).
+This is a {index}`Level 4 Heading` for demonstration.
 
 ## Text Formatting
 
-```{index} Text Formatting
-```
-
-This paragraph demonstrates **bold text**, *italic text*, and `inline code`. You can also combine them: ***bold italic***.
+This paragraph demonstrates {index}`Text Formatting` with **bold text**, *italic text*, and `inline code`. You can also combine them: ***bold italic***.
 
 A [link to example.com](https://example.com) and a [link to another page](getting-started.md) in the documentation.
 
 ## Lists
 
-```{index} Lists
-```
-
 ### Unordered Lists
 
-```{index} Unordered Lists
-```
+This section shows {index}`Lists` and {index}`Unordered Lists`.
 
 - Item one
 - Item two
@@ -46,8 +34,7 @@ A [link to example.com](https://example.com) and a [link to another page](gettin
 
 ### Ordered Lists
 
-```{index} Ordered Lists
-```
+This section shows {index}`Ordered Lists`.
 
 1. First step
 2. Second step
@@ -57,8 +44,7 @@ A [link to example.com](https://example.com) and a [link to another page](gettin
 
 ## Blockquote
 
-```{index} Blockquote
-```
+This section demonstrates a {index}`Blockquote`.
 
 > This is a blockquote. It stands out from the main text and is used to highlight
 > important information, quotes, or tangential notes.
@@ -67,8 +53,7 @@ A [link to example.com](https://example.com) and a [link to another page](gettin
 
 ## Code Blocks
 
-```{index} Code Blocks
-```
+This section demonstrates {index}`Code Blocks`.
 
 A Python code block with syntax highlighting:
 
@@ -93,8 +78,7 @@ thdocs build --strict
 
 ## Table
 
-```{index} Table
-```
+This section demonstrates a {index}`Table`.
 
 A table with header and content rows:
 
@@ -106,13 +90,11 @@ A table with header and content rows:
 
 ## Admonitions
 
-```{index} Admonitions
-```
+This section demonstrates {index}`Admonitions`.
 
 ### Note
 
-```{index} Note
-```
+This section demonstrates a {index}`Note` admonition.
 
 ```{note}
 This is a note admonition. Use notes to provide additional context or helpful information.
@@ -120,8 +102,7 @@ This is a note admonition. Use notes to provide additional context or helpful in
 
 ### Warning
 
-```{index} Warning
-```
+This section demonstrates a {index}`Warning` admonition.
 
 ```{warning}
 This is a warning admonition. Use warnings to highlight important cautions or gotchas.
@@ -129,8 +110,7 @@ This is a warning admonition. Use warnings to highlight important cautions or go
 
 ## Keyboard Input
 
-```{index} Keyboard Input
-```
+This section demonstrates {index}`Keyboard Input`.
 
 To run thdocs, press <kbd>Ctrl</kbd> + <kbd>Enter</kbd> or type:
 
@@ -140,8 +120,7 @@ thdocs dev
 
 ## Details / Summary
 
-```{index} Details / Summary
-```
+This section demonstrates {index}`Details / Summary` blocks.
 
 <details>
 <summary>Click to expand this details block</summary>
@@ -154,8 +133,7 @@ You can include multiple paragraphs and other elements inside a details block.
 
 ## Images and Figures
 
-```{index} Images and Figures
-```
+This section demonstrates {index}`Images and Figures`.
 
 An image with a caption using a figure element:
 
@@ -168,8 +146,7 @@ An image with a caption using a figure element:
 
 ## Horizontal Rule
 
-```{index} Horizontal Rule
-```
+This section demonstrates a {index}`Horizontal Rule`.
 
 A horizontal rule divides sections visually:
 
@@ -177,22 +154,17 @@ A horizontal rule divides sections visually:
 
 ## Superscript and Subscript
 
-```{index} Superscript and Subscript
-```
+This section demonstrates {index}`Superscript and Subscript`.
 
 The chemical formula H<sub>2</sub>O uses subscript. E = mc<sup>2</sup> uses superscript.
 
 ## Thai Text
 
-```{index} Thai Text
-```
+This section demonstrates {index}`Thai Text` rendering.
 
 นี่คือข้อความภาษาไทย — ทดสอบการแสดงผลฟอนต์ภาษาไทยใน thdocs ด้วย Sarabun ซึ่งรองรับภาษาไทยอย่างสมบูรณ์
 
 ## Summary
-
-```{index} Summary
-```
 
 This page demonstrates:
 

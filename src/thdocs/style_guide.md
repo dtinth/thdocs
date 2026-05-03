@@ -45,12 +45,14 @@ Do not create orphan pages. Every page must be reachable from a `{toctree}`.
 
 ## Index Entries
 
-Add `{index}` directives at the bottom of the page to keep the body clean. Only index **nouns, commands, features, and domain concepts**. Do not index structural headings like "Summary" or "See Also".
+Use the inline `{index}` role to mark key concepts **at the point where they appear in the text**. The role anchors the index entry to that exact location, so the Index tab jumps the reader to the right paragraph.
 
-````markdown
+Only index **nouns, commands, features, and domain concepts**. Do not index structural headings like "Summary" or "See Also".
+
+```markdown
 ## Installation
 
-Install with uv:
+Install thdocs with {index}`uv`:
 
 ```bash
 uv tool install thdocs
@@ -58,15 +60,8 @@ uv tool install thdocs
 
 ## Configuration
 
-Edit `thdocs.toml`.
-
-```{index}
-single: uv
-single: Installation
-single: thdocs.toml
-single: Configuration
+Edit {index}`thdocs.toml` to set the site title.
 ```
-````
 
 ## Cross-References
 
