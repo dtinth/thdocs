@@ -433,6 +433,7 @@ main.prose {
 
 @layer base {
   body {
+    @apply antialiased;
     background-color: var(--color-thdocs-bg);
     color: var(--color-thdocs-text);
     letter-spacing: 0.01em;
@@ -504,6 +505,21 @@ main.prose {
   }
   .thdocs-tab-panel li > a.current {
     color: var(--color-thdocs-accent);
+    background: rgba(255,255,255,0.05);
+  }
+  .thdocs-pdf-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    color: var(--color-thdocs-muted);
+    text-decoration: none;
+    border-radius: 2px;
+    font-size: 0.8125rem;
+  }
+  .thdocs-pdf-link:hover {
+    color: var(--color-thdocs-text);
     background: rgba(255,255,255,0.05);
   }
   /* Tree icons */

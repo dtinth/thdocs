@@ -25,6 +25,10 @@ html_js_files = ["thdocs.js"]
 
 html_sidebars = {"**": ["thdocs-sidebar.html"]}
 
+_pdf_url = os.environ.get("THDOCS_PDF")
+if _pdf_url:
+    html_context = {"pdf_url": _pdf_url}
+
 # -- LaTeX / PDF output --------------------------------------------------
 
 latex_engine = "xelatex"
