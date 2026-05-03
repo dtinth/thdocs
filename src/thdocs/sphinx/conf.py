@@ -24,3 +24,18 @@ html_css_files = ["thdocs.css"]
 html_js_files = ["thdocs.js"]
 
 html_sidebars = {"**": ["thdocs-sidebar.html"]}
+
+# -- LaTeX / PDF output --------------------------------------------------
+
+latex_engine = "xelatex"
+latex_elements = {
+    "fontpkg": r"""
+\usepackage{fontspec}
+\setmainfont{Sarabun}
+\setsansfont{FreeSans}
+\setmonofont{Comic Mono}
+""",
+}
+latex_documents = [
+    (master_doc, "index.tex", project, author, "howto", False),
+]

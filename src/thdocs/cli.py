@@ -3,13 +3,15 @@ import os
 from pathlib import Path
 
 from sphinx.cmd.build import build_main
+from sphinx.cmd import make_mode
 import sphinx_autobuild.__main__
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="thdocs")
     sub = parser.add_subparsers(dest="command", required=True)
-    sub.add_parser("build", help="Build the documentation site.")
+    build_parser = sub.add_parser("build", help="Build the documentation site.")
+    build_parser.add_argument("--pdf", action="store_true", help="Also build a PDF via LaTeX.")
     dev = sub.add_parser("dev", help="Live-reload dev server.")
     dev.add_argument("--host", default="0.0.0.0", help="Bind address (default: 0.0.0.0).")
     dev.add_argument("--port", default="20080", help="Bind port (default: 20080).")
@@ -17,7 +19,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.command == "build":
-        return _build()
+        return _build(pdf=args.pdf)
     if args.command == "dev":
         return _dev(host=args.host, port=args.port)
     if args.command == "init":
@@ -90,6 +92,20 @@ def _dev(*, host: str, port: str) -> int:
     )
 
 
-def _build() -> int:
+def _build(*, pdf: bool = False) -> int:
     srcdir, outdir, confdir = _get_project_paths()
-    return build_main(["-c", str(confdir), "-b", "html", str(srcdir), str(outdir)])
+
+    ret = build_main(["-c", str(confdir), "-b", "html", str(srcdir), str(outdir)])
+    if ret:
+        return ret
+
+    if pdf:
+        pdf_outdir = srcdir.parent / "_build" / "pdf"
+        ret = make_mode.run_make_mode(
+            ["latexpdf", str(srcdir), str(pdf_outdir), "-c", str(confdir)]
+        )
+        if ret:
+            print("PDF build failed — is LaTeX (xelatex) installed?")
+            return ret
+
+    return 0
