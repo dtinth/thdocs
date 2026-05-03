@@ -44,11 +44,10 @@ def built_project(tmp_path: Path, monkeypatch):
     guide_md = (
         "# Setup Guide\n"
         "\n"
-        "## Installation\n"
-        "\nFollow these steps to install.\n"
-        "\n"
-        "## Configuration\n"
-        "\nConfigure the system.\n"
+        "```{toctree}\n"
+        "installation\n"
+        "configuration\n"
+        "```\n"
         "\n"
         "## Advanced Options\n"
         "\nMore configuration options.\n"
@@ -77,6 +76,8 @@ def built_project(tmp_path: Path, monkeypatch):
         "## Troubleshooting\n"
         "\nCommon issues and fixes.\n"
     )
+    installation_md = "# Installation\n\nSteps to install."
+    configuration_md = "# Configuration\n\nHow to configure."
 
     _write_project(
         tmp_path,
@@ -86,6 +87,8 @@ def built_project(tmp_path: Path, monkeypatch):
             "guide.md": guide_md,
             "cli.md": cli_md,
             "advanced.md": advanced_md,
+            "installation.md": installation_md,
+            "configuration.md": configuration_md,
         },
     )
 
@@ -136,22 +139,27 @@ async def test_toctree_collapse_persists_across_navigation(built_project: Path):
         await page.goto(file_url, wait_until="domcontentloaded")
         await asyncio.sleep(0.2)
 
-        # Find a toctree toggle that's currently collapsed
-        toggles = await page.query_selector_all(".thdocs-toc-toggle")
-        assert len(toggles) > 0, "No toctree toggles found"
+        # Find a tree toggle button that's currently collapsed
+        toggles = await page.query_selector_all("thdocs-tree button")
+        assert len(toggles) > 0, "No tree toggles found"
 
         # Click the first toggle to expand it
         first_toggle = toggles[0]
         is_expanded_before = await first_toggle.get_attribute("aria-expanded")
         await first_toggle.evaluate("el => el.click()")
         await asyncio.sleep(0.1)
-        is_expanded_after = await first_toggle.get_attribute("aria-expanded")
+
+        # Re-query the toggle (tree re-renders on toggle, so the old reference is stale)
+        toggles_after = await page.query_selector_all("thdocs-tree button")
+        assert len(toggles_after) > 0, "No toggles after click"
+        first_toggle_after = toggles_after[0]
+        is_expanded_after = await first_toggle_after.get_attribute("aria-expanded")
 
         # Verify toggle state changed
         assert is_expanded_before != is_expanded_after, "Toggle state did not change"
 
         # Now navigate to another page
-        guide_link = await page.query_selector('a[href="guide.html"]')
+        guide_link = await page.query_selector('a[href*="guide.html"]')
         assert guide_link is not None, "Guide link not found"
 
         # Navigate and wait
@@ -163,7 +171,7 @@ async def test_toctree_collapse_persists_across_navigation(built_project: Path):
         await asyncio.sleep(0.2)
 
         # Verify the toggle on the new page has the same expanded state
-        toggles_on_new_page = await page.query_selector_all(".thdocs-toc-toggle")
+        toggles_on_new_page = await page.query_selector_all("thdocs-tree button")
         assert len(toggles_on_new_page) > 0, "No toggles on destination page"
 
         first_toggle_on_new_page = toggles_on_new_page[0]
@@ -195,9 +203,9 @@ async def test_scroll_memory_restores_panel_position(built_project: Path):
         )
         assert contents_panel is not None, "Contents panel not found"
 
-        # Expand all toggles to make the panel scrollable
+        # Expand all tree toggles to make the panel scrollable
         toggles = await page.query_selector_all(
-            ".thdocs-sidebar [data-panel='contents'] .thdocs-toc-toggle"
+            "thdocs-tree button"
         )
         for toggle in toggles:
             aria_expanded = await toggle.get_attribute("aria-expanded")
@@ -226,7 +234,7 @@ async def test_scroll_memory_restores_panel_position(built_project: Path):
             return  # Skip scroll restoration test
 
         # Navigate to another page
-        guide_link = await page.query_selector('a[href="guide.html"]')
+        guide_link = await page.query_selector('a[href*="guide.html"]')
         assert guide_link is not None, "Guide link not found"
 
         await guide_link.click()
@@ -280,7 +288,7 @@ async def test_focus_memory_restores_after_navigation(built_project: Path):
 
         # Find a toctree link to focus on (skip the current page link)
         links = await page.query_selector_all(
-            ".thdocs-sidebar [data-panel='contents'] a[href]"
+            "thdocs-tree .thdocs-tree__link[href]"
         )
         assert len(links) > 1, "Need at least 2 links for this test"
 
@@ -294,9 +302,9 @@ async def test_focus_memory_restores_after_navigation(built_project: Path):
 
         assert target_link is not None, "No non-current link found"
 
-        # Get the href before navigation
+        # Get the href before navigation (returns the raw attribute value, e.g. "./guide.html")
         target_href = await target_link.get_attribute("href")
-        target_href_normalized = target_href.rstrip("#")
+        target_href_normalized = target_href.rstrip("#").removeprefix("./")
 
         # Focus the link programmatically (simulating keyboard navigation)
         await target_link.focus()
@@ -312,11 +320,10 @@ async def test_focus_memory_restores_after_navigation(built_project: Path):
 
         # Press Enter to navigate
         await page.keyboard.press("Enter")
-        await asyncio.sleep(0.5)
 
         # Wait for navigation to complete
         await page.wait_for_load_state("domcontentloaded")
-        await asyncio.sleep(0.3)  # Wait for focus restore logic
+        await asyncio.sleep(1)  # Wait for tree render + setTimeout focus restore
 
         # Now check the focused element on the destination page
         active_after = await page.evaluate("document.activeElement.href || ''")
@@ -356,16 +363,16 @@ async def test_tree_component_renders_in_sidebar(built_project: Path):
         tree = await page.query_selector("thdocs-tree")
         assert tree is not None, "<thdocs-tree> component not found in sidebar"
 
-        # Tree should have rendered items (should see .tree-item elements)
-        items = await page.query_selector_all("thdocs-tree .tree-item")
+        # Tree should have rendered items (should see .thdocs-tree__item elements)
+        items = await page.query_selector_all("thdocs-tree .thdocs-tree__item")
         assert len(items) > 0, "No tree items rendered"
 
         # Should have page links (with href)
-        page_links = await page.query_selector_all("thdocs-tree .tree-link")
+        page_links = await page.query_selector_all("thdocs-tree .thdocs-tree__link")
         assert len(page_links) > 0, "No page links found in tree"
 
         # At least one link should be to guide.html
-        guide_link = await page.query_selector('thdocs-tree a[href*="guide.html"]')
+        guide_link = await page.query_selector('thdocs-tree .thdocs-tree__link[href*="guide.html"]')
         assert guide_link is not None, "Expected guide.html link not found in tree"
 
         await page.close()
@@ -454,7 +461,7 @@ async def test_scrollspy_marks_active_toc_link(built_project: Path):
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
 
-        file_url = f"file://{(built_project / 'guide.html').absolute()}"
+        file_url = f"file://{(built_project / 'advanced.html').absolute()}"
         await page.goto(file_url, wait_until="domcontentloaded")
         await asyncio.sleep(0.2)
 
