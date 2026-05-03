@@ -43,6 +43,7 @@ if os.environ.get("THDOCS_PDF_BUILD"):
     latex_elements = {
         "fontpkg": fr"""
 \usepackage{{fontspec}}
+\usepackage{{ucharclasses}}
 \XeTeXlinebreaklocale "th"
 \setmainfont[
   Path = {_fp},
@@ -60,6 +61,8 @@ if os.environ.get("THDOCS_PDF_BUILD"):
   Path = {_fp},
   BoldFont = ComicMono-Bold.ttf,
 ]{{ComicMono.ttf}}
+\newfontfamily{{\emojifont}}[Path = {_fp}]{{NotoEmoji-Regular.ttf}}
+\setTransitionsFor{{Dingbats}}{{\emojifont}}{{\normalfont}}
 """,
     }
 else:
