@@ -43,6 +43,7 @@ if os.environ.get("THDOCS_PDF_BUILD"):
     latex_elements = {
         "fontpkg": fr"""
 \usepackage{{fontspec}}
+\XeTeXlinebreaklocale "th"
 \setmainfont[
   Path = {_fp},
   BoldFont = Sarabun-Bold.ttf,

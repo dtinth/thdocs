@@ -182,6 +182,13 @@ A horizontal rule divides sections visually:
 
 The chemical formula H<sub>2</sub>O uses subscript. E = mc<sup>2</sup> uses superscript.
 
+## Thai Text
+
+```{index} Thai Text
+```
+
+นี่คือข้อความภาษาไทย — ทดสอบการแสดงผลฟอนต์ภาษาไทยใน thdocs ด้วย Sarabun ซึ่งรองรับภาษาไทยอย่างสมบูรณ์
+
 ## Summary
 
 ```{index} Summary
@@ -189,18 +196,18 @@ The chemical formula H<sub>2</sub>O uses subscript. E = mc<sup>2</sup> uses supe
 
 This page demonstrates:
 
-- ✅ Headings (h1–h4)
-- ✅ Paragraph text with bold, italic, and inline code
-- ✅ Links (external and cross-document)
-- ✅ Ordered and unordered nested lists
-- ✅ Blockquotes
-- ✅ Fenced code blocks with syntax highlighting
-- ✅ Tables with headers
-- ✅ MyST admonitions (note, warning)
-- ✅ HTML `<kbd>` elements
-- ✅ HTML `<details><summary>` blocks
-- ✅ Images with captions (via `<figure>`)
-- ✅ Horizontal rules
-- ✅ Superscript and subscript
+- [x] Headings (h1–h4)
+- [x] Paragraph text with bold, italic, and inline code
+- [x] Links (external and cross-document)
+- [x] Ordered and unordered nested lists
+- [x] Blockquotes
+- [x] Fenced code blocks with syntax highlighting
+- [x] Tables with headers
+- [x] MyST admonitions (note, warning)
+- [x] HTML `<kbd>` elements
+- [x] HTML `<details><summary>` blocks
+- [x] Images with captions (via `<figure>`)
+- [x] Horizontal rules
+- [x] Superscript and subscript
 
 All constructs should render cleanly with the thdocs dark theme.
