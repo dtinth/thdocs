@@ -69,14 +69,14 @@ This is a paragraph with **bold** and *italic*.
 
 Use Sphinx directives directly for structure:
 
-```markdown
+````markdown
 # Contents
 
 ```{toctree}
 subpage-1
 subpage-2
 ```
-```
+````
 
 See [CLI Reference](cli.md) for build and dev commands.
 
