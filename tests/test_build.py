@@ -490,8 +490,8 @@ def test_toctree_toggle_js_is_shipped(tmp_path: Path, monkeypatch) -> None:
         encoding="utf-8"
     )
 
-    # The JS must contain the toggle button class and aria-expanded attribute references.
-    assert "thdocs-toc-toggle" in js, "JS must contain thdocs-toc-toggle class"
+    # The JS must contain the tree toggle icon class and aria-expanded attribute references.
+    assert "thdocs-tree__icon" in js, "JS must contain thdocs-tree__icon class"
     assert "aria-expanded" in js, "JS must contain aria-expanded attribute"
 
 
@@ -520,7 +520,7 @@ def test_toctree_nav_memory_js_is_shipped(tmp_path: Path, monkeypatch) -> None:
     )
 
     # The JS must contain the sessionStorage keys for scroll and focus restoration.
-    assert "thdocs:tocScroll" in js, "JS must contain thdocs:tocScroll key"
-    assert "thdocs:tocFocusHref" in js, "JS must contain thdocs:tocFocusHref key"
+    assert "thdocs-tree-scroll" in js, "JS must contain thdocs-tree-scroll key"
+    assert "thdocs-tree-focus" in js, "JS must contain thdocs-tree-focus key"
     # The JS must contain the preventScroll focus option.
     assert "preventScroll" in js, "JS must contain preventScroll for safe focus restoration"
