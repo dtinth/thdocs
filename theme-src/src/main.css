@@ -519,7 +519,7 @@ main.prose {
     font-size: 0.8125rem;
   }
   .thdocs-pdf-link:hover {
-    color: var(--color-thdocs-text);
+    color: var(--color-thdocs-accent-yellow);
     background: rgba(255,255,255,0.05);
   }
   /* Tree icons */
@@ -580,6 +580,7 @@ main.prose {
   /* thdocs-tree component */
   thdocs-tree {
     display: block;
+    padding: 0 0.5rem;
   }
   /* When hydrated, hide the server-rendered fallback */
   thdocs-tree.thdocs-tree--hydrated .thdocs-fallback-tree {
