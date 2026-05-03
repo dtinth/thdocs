@@ -15,6 +15,9 @@ exclude_patterns = ["_build"]
 html_theme = "thdocs"
 pygments_style = "one-dark"
 
+if os.environ.get("THDOCS_PDF_BUILD"):
+    pygments_style = "default"
+
 _theme_dir = (Path(__file__).parent.parent / "theme").resolve()
 html_theme_path = [str(_theme_dir)]
 
@@ -36,7 +39,7 @@ latex_elements = {
     "fontpkg": r"""
 \usepackage{fontspec}
 \setmainfont{Sarabun}
-\setsansfont{FreeSans}
+\setsansfont{Sarabun}
 \setmonofont{Comic Mono}
 """,
 }
