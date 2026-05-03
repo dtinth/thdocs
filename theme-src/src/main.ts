@@ -315,16 +315,66 @@ function setupMobileSidebar(): void {
   });
 }
 
+function setupSidebarSearch(): void {
+  const searchInput = document.querySelector<HTMLInputElement>("#thdocs-search-input");
+  const searchPanel = document.querySelector<HTMLElement>('[data-panel="search"]');
+  if (!searchInput || !searchPanel) return;
+
+  let indexLoaded = false;
+
+  function loadSearchIndex(): void {
+    if (indexLoaded) return;
+    const contentRoot = document.documentElement.dataset.content_root || "./";
+    const script = document.createElement("script");
+    script.src = contentRoot + "searchindex.js";
+    script.onload = () => { indexLoaded = true; };
+    document.body.appendChild(script);
+  }
+
+  const panelObserver = new MutationObserver(() => {
+    if (!searchPanel.hasAttribute("hidden")) loadSearchIndex();
+  });
+  panelObserver.observe(searchPanel, { attributes: true, attributeFilter: ["hidden"] });
+
+  let debounceTimer: number | undefined;
+  searchInput.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    const query = searchInput.value.trim();
+    const container = document.getElementById("search-results");
+    if (!container) return;
+    if (!query) {
+      container.innerHTML = "";
+      return;
+    }
+    debounceTimer = window.setTimeout(() => {
+      container.innerHTML = "";
+      if (Search.hasIndex()) {
+        Search.performSearch(query);
+      } else {
+        Search.deferQuery(query);
+        loadSearchIndex();
+      }
+    }, 200);
+  });
+}
+
+declare const Search: {
+  _index: unknown;
+  hasIndex: () => boolean;
+  performSearch: (query: string) => void;
+  deferQuery: (query: string) => void;
+};
+
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     wireSidebarTabs();
     setupScrollspy();
-    // Tree is now handled by <thdocs-tree> component
     setupMobileSidebar();
+    setupSidebarSearch();
   });
 } else {
   wireSidebarTabs();
   setupScrollspy();
-  // Tree is now handled by <thdocs-tree> component
   setupMobileSidebar();
+  setupSidebarSearch();
 }

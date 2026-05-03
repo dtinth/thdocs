@@ -120,11 +120,11 @@ not internal implementation details.
 Three verbs in v1:
 
 - **`thdocs build`** — one-shot build. Orchestrates `sphinx-build` then
-  `pagefind` over the HTML output. `--pdf` adds the LaTeX builder pass.
-  `--strict` is `sphinx-build -W` (treat warnings as errors).
+  optionally builds PDF. `--pdf` builds only the PDF. `--with-pdf` builds
+  HTML + PDF and includes a PDF download link in the site. `--strict` is
+  `sphinx-build -W` (treat warnings as errors).
 - **`thdocs dev`** — live-reload dev server (essentially a wrapper around
-  `sphinx-autobuild`). Skips Pagefind for speed; the Search tab shows a
-  "disabled in dev mode" message. Skips PDF.
+  `sphinx-autobuild`). Skips PDF for speed.
 - **`thdocs init`** — scaffold a new docs project in cwd: writes
   `thdocs.toml`, `docs/index.md` (with a sample `{toctree}`), and
   appends `_build/` to `.gitignore`.
@@ -148,10 +148,13 @@ nostalgia:
 
 2. **Index** — alphabetical index, server-rendered from `{index}`
    directives (Sphinx's `genindex`), inlined into the sidebar by the theme.
-3. **Search** — full-text search powered by **Pagefind**. Run as a
-   post-build step over Sphinx's HTML output. The theme uses Pagefind's
-   JS API to render results into the tab; we do not use Pagefind's
-   default modal UI.
+3. **Search** — full-text search using **Sphinx's built-in client-side
+   search engine**. The search index (`searchindex.js`) is lazy-loaded when
+   the Search tab is first activated. The `Search` API from `searchtools.js`
+   is used for the search engine; results are rendered directly into the
+   sidebar panel (no full-page redirect). Pagefind was considered but the
+   built-in search is sufficient and avoids an extra dependency and
+   post-build step.
 
 Plus:
 
