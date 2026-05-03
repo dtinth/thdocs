@@ -10,6 +10,7 @@ getting-started
 configuration
 cli
 kitchen-sink
+style-guide
 ```
 
 ```{toctree}
