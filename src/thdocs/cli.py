@@ -129,12 +129,12 @@ def _build_with_pdf(srcdir: Path, outdir: Path, confdir: Path) -> int:
     pdf_filename = _slugify(title) + ".pdf"
 
     os.environ["THDOCS_PDF"] = pdf_filename
-    os.environ["THDOCS_PDF_BUILD"] = "1"
 
     ret = build_main(["-c", str(confdir), "-b", "html", str(srcdir), str(outdir)])
     if ret:
         return ret
 
+    os.environ["THDOCS_PDF_BUILD"] = "1"
     pdf_outdir = srcdir.parent / "_build" / "pdf"
     ret = make_mode.run_make_mode(
         ["latexpdf", str(srcdir), str(pdf_outdir), "-c", str(confdir)]
