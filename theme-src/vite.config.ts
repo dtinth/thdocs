@@ -8,11 +8,14 @@ export default defineConfig({
     outDir: resolve(__dirname, "../src/thdocs/static"),
     emptyOutDir: false,
     sourcemap: true,
+    lib: {
+      entry: resolve(__dirname, "src/main.ts"),
+      name: "thdocs",
+      formats: ["umd"],
+      fileName: () => "thdocs.js",
+    },
     rollupOptions: {
-      input: { thdocs: resolve(__dirname, "src/main.ts") },
       output: {
-        entryFileNames: "thdocs.js",
-        chunkFileNames: "thdocs-[name].js",
         assetFileNames: (assetInfo) => {
           if (assetInfo.name && assetInfo.name.endsWith(".css")) return "thdocs.css";
           return "[name][extname]";

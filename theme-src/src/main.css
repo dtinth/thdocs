@@ -488,25 +488,7 @@ main.prose {
     padding: 0;
     margin: 0;
   }
-  .thdocs-tab-panel li > a {
-    display: block;
-    padding: 0.25rem 0.5rem;
-    color: var(--color-thdocs-accent-yellow);
-    text-decoration: none;
-    border-radius: 2px;
-    line-height: 1.4;
-  }
-  .thdocs-tab-panel li > a:visited {
-    color: #feb;
-  }
-  .thdocs-tab-panel li > a:hover {
-    color: var(--color-thdocs-accent-yellow);
-    background: rgba(255,255,255,0.05);
-  }
-  .thdocs-tab-panel li > a.current {
-    color: var(--color-thdocs-accent);
-    background: rgba(255,255,255,0.05);
-  }
+
   .thdocs-pdf-link {
     display: flex;
     align-items: center;
@@ -523,9 +505,9 @@ main.prose {
     background: rgba(255,255,255,0.05);
   }
   .thdocs-search {
-    padding: 1rem 0;
+    padding: 0.5rem 0.5rem 0;
   }
-  .thdocs-search-input {
+  .thdocs-search__input {
     width: 100%;
     box-sizing: border-box;
     background: #353433;
@@ -537,50 +519,52 @@ main.prose {
     font-size: 0.8125rem;
     outline: none;
   }
-  .thdocs-search-input:focus {
+  .thdocs-search__input:focus {
     border-color: var(--color-thdocs-accent);
   }
-  .thdocs-search-input::placeholder {
+  .thdocs-search__input::placeholder {
     color: var(--color-thdocs-muted);
   }
-  .thdocs-search-results {
+  .thdocs-search__results {
     margin-top: 0.5rem;
   }
-  .thdocs-search-results ul.search {
+  .thdocs-search__results ul {
     list-style: none;
     margin: 0;
     padding: 0;
   }
-  .thdocs-search-results ul.search li {
+  .thdocs-search__results li {
     margin: 0;
     padding: 0;
   }
-  .thdocs-search-results ul.search li a {
+  .thdocs-search__results a {
     display: block;
     padding: 0.25rem 0.5rem;
+    margin: 0 -0.5rem;
     color: var(--color-thdocs-accent-yellow);
     text-decoration: none;
     border-radius: 2px;
     line-height: 1.4;
-    font-size: 0.8125rem;
   }
-  .thdocs-search-results ul.search li a:hover {
+  .thdocs-search__results a:hover {
     background: rgba(255,255,255,0.05);
   }
-  .thdocs-search-results .search-summary {
-    color: var(--color-thdocs-muted);
+  .thdocs-search__results .context {
     font-size: 0.75rem;
-    margin: 0.25rem 0;
+    color: #8b8685;
   }
-  .thdocs-search-results h2 {
-    color: var(--color-thdocs-muted);
-    font-size: 0.8125rem;
-    font-weight: 600;
-    margin: 0;
-    padding: 0;
+  .thdocs-search__results a .highlighted {
+    color: #d7fc70;
   }
-  .thdocs-search-results h2 span {
-    color: var(--color-thdocs-muted);
+  .thdocs-search__results .context .highlighted {
+    color: color-mix(in srgb, #bef 72%, transparent);
+  }
+  .thdocs-search__results h2 {
+    display: none;
+  }
+  .thdocs-search__results .search-summary {
+    font-size: 0.75rem;
+    color: #8b8685;
   }
   /* Tree icons */
   .thdocs-toc-icon {
@@ -729,6 +713,74 @@ main.prose {
   .thdocs-tree__link--current {
     color: var(--color-thdocs-accent);
     background: rgba(255,255,255,0.05);
+  }
+
+  /* Index panel */
+  .thdocs-index__jump {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(1.5rem, 1fr));
+    gap: 0.125rem;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid var(--color-thdocs-border);
+    margin-bottom: 0.5rem;
+  }
+  .thdocs-index__jump-btn {
+    background: none;
+    border: 0;
+    color: var(--color-thdocs-accent);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.125rem 0.25rem;
+    cursor: pointer;
+    font: inherit;
+    text-align: center;
+  }
+  .thdocs-index__jump-btn:hover {
+    color: var(--color-thdocs-accent-yellow);
+  }
+  .thdocs-index__letter {
+    font-weight: 700;
+    color: #8b8685;
+    margin: 0.5rem 0 0.25rem;
+    padding: 0 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .thdocs-index__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .thdocs-index__list li {
+    margin: 0;
+    padding: 0;
+  }
+  .thdocs-index__list .thdocs-index__list {
+    padding-left: 1rem;
+  }
+  .thdocs-index__link {
+    display: block;
+    padding: 0.125rem 1rem;
+    color: var(--color-thdocs-accent-yellow);
+    text-decoration: none;
+    border-radius: 2px;
+    line-height: 1.4;
+  }
+  .thdocs-index__link:visited {
+    color: #feb;
+  }
+  .thdocs-index__link:hover {
+    background: rgba(255,255,255,0.05);
+  }
+  .thdocs-index__link--no-href {
+    color: var(--color-thdocs-muted);
+    cursor: default;
+  }
+  .thdocs-index__empty {
+    color: var(--color-thdocs-muted);
+    font-size: 0.8125rem;
+    padding: 1rem 0.5rem;
+    text-align: center;
   }
 
   /* Headerlinks (¶ anchors on headings) — basic.css used to style these.

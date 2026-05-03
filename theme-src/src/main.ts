@@ -315,6 +315,109 @@ function setupMobileSidebar(): void {
   });
 }
 
+function setupSidebarIndex(): void {
+  const indexPanel = document.querySelector<HTMLElement>('[data-panel="index"]');
+  if (!indexPanel) return;
+
+  let loaded = false;
+
+  function loadIndex(): void {
+    if (loaded) return;
+    if ((globalThis as any).THINDEX_DATA) {
+      renderIndex();
+      loaded = true;
+      return;
+    }
+    const contentRoot = document.documentElement.dataset.content_root || "./";
+    const script = document.createElement("script");
+    script.src = contentRoot + "_static/index_entries.js";
+    script.onload = () => {
+      loaded = true;
+      renderIndex();
+    };
+    document.body.appendChild(script);
+  }
+
+  function resolveHref(href: string | boolean): string {
+    if (href === false) return "#";
+    const baseUrl = document.documentElement.dataset.content_root || "./";
+    return baseUrl + href;
+  }
+
+  function renderIndex(): void {
+    const data = (globalThis as any).THINDEX_DATA;
+    const container = indexPanel.querySelector<HTMLElement>(".thdocs-index-content");
+    if (!container) return;
+
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      container.innerHTML = '<p class="thdocs-index-empty">No index entries.</p>';
+      return;
+    }
+
+    let html = "";
+
+    // Jump nav
+    html += '<div class="thdocs-index__jump">';
+    for (const group of data) {
+      html += `<button type="button" class="thdocs-index__jump-btn" data-letter="${esc(group.letter)}">${esc(group.letter)}</button>`;
+    }
+    html += "</div>";
+
+    // Sections
+    for (const group of data) {
+      html += `<div class="thdocs-index__section">`;
+      html += `<h3 class="thdocs-index__letter" id="thindex-${group.letter}">${esc(group.letter)}</h3>`;
+      html += '<ul class="thdocs-index__list">';
+      for (const entry of group.entries) {
+        if (entry.url) {
+          html += `<li><a class="thdocs-index__link" href="${resolveHref(entry.url)}">${esc(entry.name)}</a>`;
+        } else {
+          html += `<li><span class="thdocs-index__link thdocs-index__link--no-href">${esc(entry.name)}</span>`;
+        }
+        if (entry.subitems && entry.subitems.length > 0) {
+          html += '<ul class="thdocs-index__list">';
+          for (const sub of entry.subitems) {
+            if (sub.url) {
+              html += `<li><a class="thdocs-index__link" href="${resolveHref(sub.url)}">${esc(sub.name)}</a></li>`;
+            } else {
+              html += `<li><span class="thdocs-index__link thdocs-index__link--no-href">${esc(sub.name)}</span></li>`;
+            }
+          }
+          html += "</ul>";
+        }
+        html += "</li>";
+      }
+      html += "</ul>";
+      html += "</div>";
+    }
+
+    container.innerHTML = html;
+
+    // Wire up jump buttons
+    for (const btn of container.querySelectorAll<HTMLButtonElement>(".thdocs-index__jump-btn")) {
+      const letter = btn.dataset.letter;
+      if (letter) {
+        btn.addEventListener("click", () => {
+          const section = document.getElementById(`thindex-${letter}`);
+          if (section) section.scrollIntoView({ behavior: "smooth" });
+        });
+      }
+    }
+  }
+
+  function esc(text: string): string {
+    const d = document.createElement("div");
+    d.textContent = text;
+    return d.innerHTML;
+  }
+
+  // Lazy-load when panel becomes visible
+  const observer = new MutationObserver(() => {
+    if (!indexPanel.hasAttribute("hidden")) loadIndex();
+  });
+  observer.observe(indexPanel, { attributes: true, attributeFilter: ["hidden"] });
+}
+
 function setupSidebarSearch(): void {
   const searchInput = document.querySelector<HTMLInputElement>("#thdocs-search-input");
   const searchPanel = document.querySelector<HTMLElement>('[data-panel="search"]');
@@ -371,10 +474,12 @@ if (document.readyState === "loading") {
     setupScrollspy();
     setupMobileSidebar();
     setupSidebarSearch();
+    setupSidebarIndex();
   });
 } else {
   wireSidebarTabs();
   setupScrollspy();
   setupMobileSidebar();
   setupSidebarSearch();
+  setupSidebarIndex();
 }

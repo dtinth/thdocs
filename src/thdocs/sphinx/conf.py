@@ -9,7 +9,7 @@ project = _cfg["site"]["title"]
 author = _cfg["site"].get("author", "")
 release = _cfg["site"].get("version", "")
 
-extensions = ["myst_parser", "thdocs.sphinx.toctree_json"]
+extensions = ["myst_parser", "thdocs.sphinx.toctree_json", "thdocs.sphinx.index_json"]
 master_doc = "index"
 exclude_patterns = ["_build"]
 html_theme = "thdocs"
@@ -35,6 +35,7 @@ if _pdf_url:
 # -- LaTeX / PDF output --------------------------------------------------
 
 latex_engine = "xelatex"
+latex_use_xindy = False
 
 if os.environ.get("THDOCS_PDF_BUILD"):
     _fonts_dir = (Path(__file__).parent.parent / "fonts").resolve()
