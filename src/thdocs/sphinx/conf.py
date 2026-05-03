@@ -10,7 +10,7 @@ author = _cfg["site"].get("author", "")
 release = _cfg["site"].get("version", "")
 
 extensions = ["myst_parser", "thdocs.sphinx.toctree_json", "thdocs.sphinx.index_json"]
-myst_enable_extensions = ["deflist"]
+myst_enable_extensions = ["colon_fence", "deflist"]
 myst_heading_anchors = 3
 master_doc = "index"
 exclude_patterns = ["_build"]

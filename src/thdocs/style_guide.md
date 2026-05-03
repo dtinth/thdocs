@@ -132,6 +132,30 @@ This is a caution.
 ```
 ````
 
+### Custom Titles
+
+Use the `{admonition}` directive when you need a custom title:
+
+````markdown
+```{admonition} Pro tip
+:class: tip
+You can customize the title of any admonition.
+```
+````
+
+### Collapsible Admonitions
+
+Add `:collapsible:` to let readers expand or collapse the block. Use `closed` to hide the content by default, or `open` to show it:
+
+````markdown
+```{admonition} Advanced configuration
+:class: note
+:collapsible: closed
+
+This section is hidden until the reader expands it. Use collapsible admonitions for optional or advanced details that should not clutter the main flow.
+```
+````
+
 ## See Also
 
 Use the `{seealso}` directive for all related reading sections:
