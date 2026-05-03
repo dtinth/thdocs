@@ -30,6 +30,7 @@ packages = ["src/thdocs"]
 "src/thdocs/static" = "thdocs/static"
 "src/thdocs/theme" = "thdocs/theme"
 "src/thdocs/sphinx" = "thdocs/sphinx"
+"src/thdocs/fonts" = "thdocs/fonts"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

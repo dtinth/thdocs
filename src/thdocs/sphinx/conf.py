@@ -35,14 +35,33 @@ if _pdf_url:
 # -- LaTeX / PDF output --------------------------------------------------
 
 latex_engine = "xelatex"
-latex_elements = {
-    "fontpkg": r"""
-\usepackage{fontspec}
-\setmainfont{Sarabun}
-\setsansfont{Sarabun}
-\setmonofont{Comic Mono}
+
+if os.environ.get("THDOCS_PDF_BUILD"):
+    _fonts_dir = (Path(__file__).parent.parent / "fonts").resolve()
+    _fp = str(_fonts_dir) + "/"
+    latex_elements = {
+        "fontpkg": fr"""
+\usepackage{{fontspec}}
+\setmainfont[
+  Path = {_fp},
+  BoldFont = Sarabun-Bold.ttf,
+  ItalicFont = Sarabun-Italic.ttf,
+  BoldItalicFont = Sarabun-BoldItalic.ttf,
+]{{Sarabun-Regular.ttf}}
+\setsansfont[
+  Path = {_fp},
+  BoldFont = Sarabun-Bold.ttf,
+  ItalicFont = Sarabun-Italic.ttf,
+  BoldItalicFont = Sarabun-BoldItalic.ttf,
+]{{Sarabun-Regular.ttf}}
+\setmonofont[
+  Path = {_fp},
+  BoldFont = ComicMono-Bold.ttf,
+]{{ComicMono.ttf}}
 """,
-}
+    }
+else:
+    latex_elements = {}
 latex_documents = [
     (master_doc, "index.tex", project, author, "howto", False),
 ]
