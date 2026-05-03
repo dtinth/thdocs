@@ -104,7 +104,7 @@ class ThdocsTree extends HTMLElement {
   }
 
   private scrollCurrentIntoView() {
-    const current = this.querySelector<HTMLElement>(".tree-link.current");
+    const current = this.querySelector<HTMLElement>(".thdocs-tree__link--current");
     if (!current) return;
     // Only scroll if not already visible within the scroll container
     const container = this.getScrollContainer();
@@ -119,8 +119,8 @@ class ThdocsTree extends HTMLElement {
     const focusHref = sessionStorage.getItem("thdocs-tree-focus");
     if (!focusHref) return;
     sessionStorage.removeItem("thdocs-tree-focus");
-    const link = this.querySelector<HTMLAnchorElement>(`a.tree-link[href="${CSS.escape(focusHref)}"]`)
-      || Array.from(this.querySelectorAll<HTMLAnchorElement>("a.tree-link")).find(
+    const link = this.querySelector<HTMLAnchorElement>(`a.thdocs-tree__link[href="${CSS.escape(focusHref)}"]`)
+      || Array.from(this.querySelectorAll<HTMLAnchorElement>("a.thdocs-tree__link")).find(
         (a) => a.href === focusHref,
       );
     if (link) {
@@ -151,7 +151,7 @@ class ThdocsTree extends HTMLElement {
     this.render();
     // Re-render destroyed the focused button — restore focus on the new one
     const btn = this.querySelector<HTMLButtonElement>(
-      `button.tree-icon[data-node-id="${CSS.escape(nodeId)}"]`,
+      `button.thdocs-tree__icon[data-node-id="${CSS.escape(nodeId)}"]`,
     );
     if (btn) btn.focus({ preventScroll: true });
   }
@@ -160,7 +160,7 @@ class ThdocsTree extends HTMLElement {
     if (!this.data) return;
 
     const ul = document.createElement("ul");
-    ul.className = "tree";
+    ul.className = "thdocs-tree__list";
 
     for (const item of this.data.items) {
       ul.appendChild(this.renderNode(item));
@@ -168,7 +168,7 @@ class ThdocsTree extends HTMLElement {
 
     // Replace previous render if any; otherwise append alongside the fallback
     // and mark the host so CSS can hide the fallback.
-    const existing = this.querySelector(":scope > ul.tree");
+    const existing = this.querySelector(":scope > ul.thdocs-tree__list");
     if (existing) {
       existing.replaceWith(ul);
     } else {
@@ -179,10 +179,10 @@ class ThdocsTree extends HTMLElement {
 
   private renderNode(node: TreeNode): HTMLElement {
     const li = document.createElement("li");
-    li.className = "tree-item";
+    li.className = "thdocs-tree__item";
 
     const row = document.createElement("div");
-    row.className = "tree-row";
+    row.className = "thdocs-tree__row";
 
     const hasChildren = node.children.length > 0;
     const isExpanded = this.expanded.get(node.id) ?? false;
@@ -191,7 +191,7 @@ class ThdocsTree extends HTMLElement {
     if (hasChildren) {
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = `tree-icon tree-icon--book ${isExpanded ? "tree-icon--book-open" : "tree-icon--book-closed"}`;
+      btn.className = `thdocs-tree__icon ${isExpanded ? "thdocs-tree__icon--book-open" : "thdocs-tree__icon--book-closed"}`;
       btn.setAttribute("aria-expanded", isExpanded ? "true" : "false");
       btn.setAttribute("aria-label", "Toggle");
       btn.dataset.nodeId = node.id;
@@ -203,13 +203,13 @@ class ThdocsTree extends HTMLElement {
       row.appendChild(btn);
     } else {
       const icon = document.createElement("span");
-      icon.className = "tree-icon tree-icon--page";
+      icon.className = "thdocs-tree__icon thdocs-tree__icon--page";
       row.appendChild(icon);
     }
 
     if (node.type === "section") {
       const span = document.createElement("span");
-      span.className = "tree-section-title";
+      span.className = "thdocs-tree__section-title";
       span.textContent = node.title;
       if (hasChildren) {
         span.style.cursor = "pointer";
@@ -221,7 +221,7 @@ class ThdocsTree extends HTMLElement {
       link.href = node.href ? this.resolveHref(node.href) : "#";
       // After assignment, link.href returns the resolved absolute URL — compare against current page
       const isCurrent = link.href === this.currentPage;
-      link.className = `tree-link${isCurrent ? " current" : ""}`;
+      link.className = `thdocs-tree__link${isCurrent ? " thdocs-tree__link--current" : ""}`;
       link.textContent = node.title;
       // Remember focus + scroll so the next page can restore them for keyboard/visual continuity
       const remember = () => {
@@ -239,7 +239,7 @@ class ThdocsTree extends HTMLElement {
 
     if (hasChildren) {
       const ul = document.createElement("ul");
-      ul.className = "tree-children";
+      ul.className = "thdocs-tree__children";
       ul.style.display = isExpanded ? "block" : "none";
 
       for (const child of node.children) {

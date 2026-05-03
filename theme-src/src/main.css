@@ -646,21 +646,22 @@ main.prose {
   thdocs-tree.thdocs-tree--hydrated .thdocs-fallback-tree {
     display: none;
   }
-  thdocs-tree ul {
+  .thdocs-tree__list,
+  .thdocs-tree__children {
     list-style: none;
-    padding: 0;
     margin: 0;
+    padding: 0;
   }
-  thdocs-tree .tree-children {
+  .thdocs-tree__children {
     padding-left: 1rem;
   }
-  thdocs-tree .tree-row {
+  .thdocs-tree__row {
     display: flex;
     align-items: center;
     gap: 0.25rem;
     padding: 0.125rem 0;
   }
-  thdocs-tree .tree-icon {
+  .thdocs-tree__icon {
     flex: none;
     display: inline-block;
     width: 1rem;
@@ -671,45 +672,42 @@ main.prose {
     color: #8b8685;
     transition: color 0.15s ease;
   }
-  thdocs-tree button.tree-icon {
+  button.thdocs-tree__icon {
     cursor: pointer;
   }
-  thdocs-tree button.tree-icon:hover {
+  button.thdocs-tree__icon:hover {
     color: var(--color-thdocs-text);
   }
-  thdocs-tree button.tree-icon:focus-visible {
+  button.thdocs-tree__icon:focus-visible {
     color: var(--color-thdocs-text);
     outline: 2px solid var(--color-thdocs-accent);
     outline-offset: 2px;
     border-radius: 2px;
   }
-  thdocs-tree .tree-link:focus-visible {
-    outline: 2px solid var(--color-thdocs-accent);
-    outline-offset: -2px;
-  }
-  thdocs-tree .tree-section-title:focus-visible {
-    outline: 2px solid var(--color-thdocs-accent);
-    outline-offset: 2px;
-    border-radius: 2px;
-  }
-  thdocs-tree .tree-icon--book-closed {
+  .thdocs-tree__icon--book-closed {
     -webkit-mask: url("https://api.iconify.design/lucide/book.svg") no-repeat center / contain;
             mask: url("https://api.iconify.design/lucide/book.svg") no-repeat center / contain;
   }
-  thdocs-tree .tree-icon--book-open {
+  .thdocs-tree__icon--book-open {
     -webkit-mask: url("https://api.iconify.design/lucide/book-open.svg") no-repeat center / contain;
             mask: url("https://api.iconify.design/lucide/book-open.svg") no-repeat center / contain;
   }
-  thdocs-tree .tree-icon--page {
+  .thdocs-tree__icon--page {
     -webkit-mask: url("https://api.iconify.design/lucide/file-text.svg") no-repeat center / contain;
             mask: url("https://api.iconify.design/lucide/file-text.svg") no-repeat center / contain;
   }
-  thdocs-tree .tree-section-title {
+  .thdocs-tree__section-title {
     font-weight: 600;
     color: var(--color-thdocs-text);
     user-select: none;
+    padding: 0.125rem 0.25rem;
   }
-  thdocs-tree .tree-link {
+  .thdocs-tree__section-title:focus-visible {
+    outline: 2px solid var(--color-thdocs-accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  .thdocs-tree__link {
     flex: 1;
     display: block;
     padding: 0.125rem 0.25rem;
@@ -718,13 +716,17 @@ main.prose {
     border-radius: 2px;
     line-height: 1.4;
   }
-  thdocs-tree .tree-link:visited {
+  .thdocs-tree__link:visited {
     color: #feb;
   }
-  thdocs-tree .tree-link:hover {
+  .thdocs-tree__link:hover {
     background: rgba(255,255,255,0.05);
   }
-  thdocs-tree .tree-link.current {
+  .thdocs-tree__link:focus-visible {
+    outline: 2px solid var(--color-thdocs-accent);
+    outline-offset: -2px;
+  }
+  .thdocs-tree__link--current {
     color: var(--color-thdocs-accent);
     background: rgba(255,255,255,0.05);
   }
