@@ -70,13 +70,6 @@ Then open `http://127.0.0.1:8888/` in your browser. The page reloads automatical
 ```{index} thdocs.toml
 ```
 
-Project configuration lives in `thdocs.toml` at the repo root:
-
-```toml
-[site]
-title = "My Project"
-author = "Your Name"
-version = "1.0.0"
-```
+See {doc}`configuration` for all available `thdocs.toml` options.
 
 The Sphinx configuration file (`conf.py`) is generated internally—you do not need to create one.

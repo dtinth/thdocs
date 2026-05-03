@@ -39,6 +39,11 @@
 {%- endblock %}
 {%- block relbar1 %}{% endblock %}
 {%- block relbar2 %}{% endblock %}
+{%- block footer %}
+  <div class="thdocs-footer">
+    {{ super() }}
+  </div>
+{%- endblock %}
 {%- block document -%}
   {{ super() }}
   <aside class="thdocs-page-toc">

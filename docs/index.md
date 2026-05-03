@@ -7,6 +7,7 @@ Welcome to thdocs—a reusable documentation generator for Markdown projects.
 :maxdepth: 2
 
 getting-started
+configuration
 cli
 kitchen-sink
 ```

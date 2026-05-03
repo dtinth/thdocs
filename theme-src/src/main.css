@@ -270,15 +270,20 @@ main.prose {
 }
 
 /* Footer */
-.footer {
+.thdocs-footer {
   margin-left: 320px;
+}
+
+.footer {
+  max-width: 896px;
+  margin: 0 auto;
   padding: 2rem 1.5rem;
   font-size: 0.75rem;
   color: var(--color-thdocs-muted);
 }
 
 @media (max-width: 768px) {
-  .footer {
+  .thdocs-footer {
     margin-left: 0;
   }
 }
