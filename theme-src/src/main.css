@@ -113,6 +113,9 @@ html div.sphinxsidebar {
   html div.documentwrapper {
     margin-right: 224px;
   }
+  .thdocs-footer {
+    margin-right: 224px;
+  }
 }
 
 .thdocs-page-toc-title {
