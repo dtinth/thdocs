@@ -9,7 +9,9 @@ project = _cfg["site"]["title"]
 author = _cfg["site"].get("author", "")
 release = _cfg["site"].get("version", "")
 
-extensions = ["myst_parser", "thdocs.sphinx.toctree_json", "thdocs.sphinx.index_json"]
+extensions = ["myst_parser", "thdocs.sphinx.toctree_json"]
+if _cfg["site"].get("genindex"):
+    extensions.append("thdocs.sphinx.index_json")
 myst_enable_extensions = ["colon_fence", "deflist"]
 myst_heading_anchors = 3
 master_doc = "index"
@@ -30,9 +32,14 @@ html_js_files = ["thdocs.js"]
 
 html_sidebars = {"**": ["thdocs-sidebar.html"]}
 
+html_context = {}
+
 _pdf_url = os.environ.get("THDOCS_PDF")
 if _pdf_url:
-    html_context = {"pdf_url": _pdf_url}
+    html_context["pdf_url"] = _pdf_url
+
+if _cfg["site"].get("genindex"):
+    html_context["genindex"] = True
 
 # -- LaTeX / PDF output --------------------------------------------------
 

@@ -3,11 +3,13 @@ from pathlib import Path
 from thdocs.cli import main
 
 
-def _write_project(root: Path, *, title: str, pages: dict[str, str]) -> None:
-    (root / "thdocs.toml").write_text(
-        f'[site]\ntitle = "{title}"\n',
-        encoding="utf-8",
-    )
+def _write_project(
+    root: Path, *, title: str, pages: dict[str, str], genindex: bool | None = None
+) -> None:
+    lines = ["[site]", f'title = "{title}"']
+    if genindex is not None:
+        lines.append(f"genindex = {str(genindex).lower()}")
+    (root / "thdocs.toml").write_text("\n".join(lines) + "\n", encoding="utf-8")
     docs_dir = root / "docs"
     docs_dir.mkdir()
     for name, body in pages.items():
@@ -151,6 +153,7 @@ def test_sidebar_skeleton_has_three_tabs_with_contents_filled(
             "index.md": index_md,
             "guide.md": "# Guide\n",
         },
+        genindex=True,
     )
     monkeypatch.chdir(tmp_path)
 
@@ -175,6 +178,31 @@ def test_sidebar_skeleton_has_three_tabs_with_contents_filled(
     # appears between the Contents panel marker and the next panel marker).
     guide_link = rendered.index('href="guide.html"', contents_panel)
     assert contents_panel < guide_link < index_panel
+
+
+def test_sidebar_without_genindex_has_two_tabs(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _write_project(
+        tmp_path,
+        title="Site",
+        pages={"index.md": "# Welcome\n"},
+    )
+    monkeypatch.chdir(tmp_path)
+
+    assert main(["build"]) == 0
+
+    rendered = (tmp_path / "_build" / "html" / "index.html").read_text(encoding="utf-8")
+
+    # Only Contents and Search tabs exist.
+    assert 'data-tab="contents"' in rendered
+    assert 'data-tab="search"' in rendered
+    assert 'data-tab="index"' not in rendered
+
+    # Only Contents and Search panels exist.
+    assert 'data-panel="contents"' in rendered
+    assert 'data-panel="search"' in rendered
+    assert 'data-panel="index"' not in rendered
 
 
 def test_compiled_thdocs_css_includes_tailwind_typography(

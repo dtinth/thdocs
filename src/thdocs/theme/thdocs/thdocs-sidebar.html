@@ -1,7 +1,9 @@
 <div class="thdocs-sidebar">
   <nav class="thdocs-tabs" role="tablist">
     <button type="button" role="tab" data-tab="contents" aria-selected="true">Contents</button>
+    {%- if genindex %}
     <button type="button" role="tab" data-tab="index" aria-selected="false">Index</button>
+    {%- endif %}
     <button type="button" role="tab" data-tab="search" aria-selected="false">Search</button>
   </nav>
   <div class="thdocs-tab-panel" data-panel="contents" role="tabpanel">
@@ -16,9 +18,11 @@
     </a>
     {%- endif %}
   </div>
+  {%- if genindex %}
   <div class="thdocs-tab-panel" data-panel="index" role="tabpanel" hidden>
     <div class="thdocs-index-content"></div>
   </div>
+  {%- endif %}
   <div class="thdocs-tab-panel" data-panel="search" role="tabpanel" hidden>
     <div class="thdocs-search">
       <input type="text" id="thdocs-search-input" class="thdocs-search__input" placeholder="Search..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
