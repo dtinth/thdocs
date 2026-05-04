@@ -524,7 +524,6 @@ main.prose {
     padding: 0.5rem;
     border-radius: 4px;
     font: inherit;
-    font-size: 0.8125rem;
     outline: none;
   }
   .thdocs-search__input:focus {
