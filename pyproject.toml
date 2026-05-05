@@ -7,6 +7,14 @@ dependencies = [
     "sphinx>=7",
     "myst-parser>=3",
     "sphinx-autobuild>=2021",
+    "pillow>=10",
+]
+
+[project.optional-dependencies]
+server = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "python-multipart>=0.0.17",
 ]
 
 [project.scripts]
