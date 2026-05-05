@@ -4,9 +4,19 @@ from thdocs.cli import main
 
 
 def _write_project(
-    root: Path, *, title: str, pages: dict[str, str], genindex: bool | None = None
+    root: Path,
+    *,
+    title: str,
+    pages: dict[str, str],
+    genindex: bool | None = None,
+    author: str | None = None,
+    version: str | None = None,
 ) -> None:
     lines = ["[site]", f'title = "{title}"']
+    if author is not None:
+        lines.append(f'author = "{author}"')
+    if version is not None:
+        lines.append(f'version = "{version}"')
     if genindex is not None:
         lines.append(f"genindex = {str(genindex).lower()}")
     (root / "thdocs.toml").write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -552,3 +562,68 @@ def test_toctree_nav_memory_js_is_shipped(tmp_path: Path, monkeypatch) -> None:
     assert "thdocs-tree-focus" in js, "JS must contain thdocs-tree-focus key"
     # The JS must contain the preventScroll focus option.
     assert "preventScroll" in js, "JS must contain preventScroll for safe focus restoration"
+
+
+def test_copyright_includes_author_name(tmp_path: Path, monkeypatch) -> None:
+    """When author is set, the footer copyright includes the author name."""
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"}, author="Ada Lovelace")
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+
+    html = (tmp_path / "_build" / "html" / "index.html").read_text(encoding="utf-8")
+    assert "Copyright" in html
+    assert "Ada Lovelace" in html
+
+
+def test_copyright_without_author_is_year_only(tmp_path: Path, monkeypatch) -> None:
+    """When no author is set, the footer copyright shows only the year."""
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+
+    html = (tmp_path / "_build" / "html" / "index.html").read_text(encoding="utf-8")
+    assert "Copyright" in html
+    # Make sure no comma follows "Copyright <year>" when author is absent.
+    import re
+
+    match = re.search(r"Copyright\s+\d{4}([^<]*)\.", html)
+    assert match is not None
+    assert "," not in match.group(1), "Copyright should not have a comma when author is absent"
+
+
+def test_version_from_toml_appears_in_page_title(tmp_path: Path, monkeypatch) -> None:
+    """A version set in thdocs.toml appears in the rendered page title."""
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"}, version="3.2.1")
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+
+    html = (tmp_path / "_build" / "html" / "index.html").read_text(encoding="utf-8")
+    assert "3.2.1" in html
+
+
+def test_version_auto_detected_from_package_json(tmp_path: Path, monkeypatch) -> None:
+    """If no version is set and package.json exists, version is auto-detected."""
+    _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
+    (tmp_path / "package.json").write_text(
+        '{"name": "test", "version": "7.8.9"}', encoding="utf-8"
+    )
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+
+    html = (tmp_path / "_build" / "html" / "index.html").read_text(encoding="utf-8")
+    assert "7.8.9" in html
+
+
+def test_version_from_custom_json_file(tmp_path: Path, monkeypatch) -> None:
+    """A version ending in '.json' is treated as a JSON file path to read."""
+    _write_project(
+        tmp_path, title="Site", pages={"index.md": "# Hi\n"}, version="manifest.json"
+    )
+    (tmp_path / "manifest.json").write_text(
+        '{"version": "4.5.6"}', encoding="utf-8"
+    )
+    monkeypatch.chdir(tmp_path)
+    assert main(["build"]) == 0
+
+    html = (tmp_path / "_build" / "html" / "index.html").read_text(encoding="utf-8")
+    assert "4.5.6" in html

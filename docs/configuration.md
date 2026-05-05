@@ -28,9 +28,9 @@ version = "1.0.0"
 :   ```{index} author (config)
     ```
 
-    The author or organization name. Used in the PDF metadata and the Sphinx `author` field.
+    The author or organization name. Used in the PDF metadata, the Sphinx `author` field, and the site footer copyright notice.
 
-    Optional. Defaults to an empty string.
+    Optional. Defaults to an empty string. When set, the footer shows `© Copyright 2026, Author Name.`; when empty, it shows `© Copyright 2026.`
 
 `[site].version`
 :   ```{index} version (config)
@@ -38,7 +38,17 @@ version = "1.0.0"
 
     The project version string. Displayed in the site header and PDF metadata.
 
-    Optional. Defaults to an empty string.
+    Optional. Defaults to an empty string. Three forms are supported:
+
+    1. **Plain string** — used as-is:
+       ```toml
+       version = "2.5.0"
+       ```
+    2. **JSON file path** — thdocs reads the file and extracts the `"version"` field:
+       ```toml
+       version = "package.json"
+       ```
+    3. **Auto-detect** — if `version` is omitted and `package.json` exists in the project root, the `"version"` field is read automatically.
 
 ## Example
 
