@@ -1,3 +1,4 @@
+import json
 import os
 import tomllib
 from pathlib import Path
@@ -7,7 +8,25 @@ _cfg = tomllib.loads((_project_root / "thdocs.toml").read_text(encoding="utf-8")
 
 project = _cfg["site"]["title"]
 author = _cfg["site"].get("author", "")
+
+# -- Version ---------------------------------------------------------------
+
 release = _cfg["site"].get("version", "")
+if not release and (_project_root / "package.json").exists():
+    release = "package.json"
+
+if release.endswith(".json"):
+    json_path = _project_root / release
+    release = json.loads(json_path.read_text(encoding="utf-8")).get("version", "")
+
+# -- Copyright -------------------------------------------------------------
+
+if author:
+    copyright = f"%Y, {author}"
+else:
+    copyright = "%Y"
+
+# ---------------------------------------------------------------------------
 
 extensions = ["myst_parser", "thdocs.sphinx.toctree_json"]
 if _cfg["site"].get("genindex"):
