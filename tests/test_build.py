@@ -1,12 +1,6 @@
-import shutil
 from pathlib import Path
 
-import pytest
-
 from thdocs.cli import main
-
-
-_has_xelatex = shutil.which("xelatex") is not None
 
 
 def _write_project(
@@ -686,7 +680,6 @@ def test_version_from_custom_json_file(tmp_path: Path, monkeypatch) -> None:
     assert "4.5.6" in html
 
 
-@pytest.mark.skipif(not _has_xelatex, reason="xelatex not installed")
 def test_pdf_external_links_use_footnotes(tmp_path: Path, monkeypatch) -> None:
     """External URLs in PDF appear as footnotes, not inline."""
     _write_project(
@@ -703,7 +696,6 @@ def test_pdf_external_links_use_footnotes(tmp_path: Path, monkeypatch) -> None:
     assert "\\begin{footnote}" in tex
 
 
-@pytest.mark.skipif(not _has_xelatex, reason="xelatex not installed")
 def test_pdf_internal_links_show_page_refs(tmp_path: Path, monkeypatch) -> None:
     """Internal cross-references in PDF include page numbers."""
     _write_project(
