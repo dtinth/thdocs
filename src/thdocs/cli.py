@@ -20,6 +20,9 @@ def main(argv: list[str] | None = None) -> int:
     dev.add_argument("--port", default="20080", help="Bind port (default: 20080).")
     sub.add_parser("init", help="Scaffold a new docs project in the current directory.")
     sub.add_parser("style-guide", help="Print the thdocs authoring style guide.")
+    daemon = sub.add_parser("daemon", help="Run the remote build daemon.")
+    daemon.add_argument("--host", default="0.0.0.0", help="Bind address (default: 0.0.0.0).")
+    daemon.add_argument("--port", default=20081, type=int, help="Bind port (default: 20081).")
     args = parser.parse_args(argv)
 
     if args.command == "build":
@@ -30,6 +33,8 @@ def main(argv: list[str] | None = None) -> int:
         return _init()
     if args.command == "style-guide":
         return _style_guide()
+    if args.command == "daemon":
+        return _daemon(host=args.host, port=args.port)
     raise AssertionError(f"unhandled command: {args.command}")
 
 
@@ -101,6 +106,14 @@ def _dev(*, host: str, port: str) -> int:
 def _style_guide() -> int:
     guide_path = Path(__file__).parent / "style_guide.md"
     print(guide_path.read_text(encoding="utf-8"))
+    return 0
+
+
+def _daemon(*, host: str, port: int) -> int:
+    import uvicorn
+    from thdocs.server import app
+
+    uvicorn.run(app, host=host, port=port)
     return 0
 
 
