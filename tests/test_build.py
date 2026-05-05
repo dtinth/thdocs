@@ -678,3 +678,43 @@ def test_version_from_custom_json_file(tmp_path: Path, monkeypatch) -> None:
 
     html = (tmp_path / "_build" / "html" / "index.html").read_text(encoding="utf-8")
     assert "4.5.6" in html
+
+
+def test_pdf_external_links_use_footnotes(tmp_path: Path, monkeypatch) -> None:
+    """External URLs in PDF appear as footnotes, not inline."""
+    _write_project(
+        tmp_path,
+        title="Site",
+        pages={"index.md": "# Hello\n\nVisit [example](https://example.com).\n"},
+    )
+    monkeypatch.chdir(tmp_path)
+    assert main(["build", "--pdf"]) == 0
+
+    tex = (tmp_path / "_build" / "pdf" / "latex" / "index.tex").read_text(encoding="utf-8")
+    # Sphinx with latex_show_urls='footnote' puts the URL in a footnote.
+    assert "\\sphinxhref{https://example.com}" in tex
+    assert "\\begin{footnote}" in tex
+
+
+def test_pdf_internal_links_show_page_refs(tmp_path: Path, monkeypatch) -> None:
+    """Internal cross-references in PDF include page numbers."""
+    _write_project(
+        tmp_path,
+        title="Site",
+        pages={
+            "index.md": (
+                "# Welcome\n\n"
+                "```{toctree}\n"
+                "guide\n"
+                "```\n\n"
+                "See {doc}`guide` for details.\n"
+            ),
+            "guide.md": "# Guide\n\nSome info.\n",
+        },
+    )
+    monkeypatch.chdir(tmp_path)
+    assert main(["build", "--pdf"]) == 0
+
+    tex = (tmp_path / "_build" / "pdf" / "latex" / "index.tex").read_text(encoding="utf-8")
+    # latex_show_pagerefs=True adds \autopageref* after internal cross-references.
+    assert "\\autopageref" in tex
