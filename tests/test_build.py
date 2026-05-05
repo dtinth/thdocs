@@ -120,6 +120,57 @@ def test_toctree_links_subpage(tmp_path: Path, monkeypatch) -> None:
     assert 'href="guide.html"' in index_html
 
 
+def test_toctree_external_links_preserved(tmp_path: Path, monkeypatch) -> None:
+    index_md = (
+        "# Welcome\n"
+        "\n"
+        "```{toctree}\n"
+        "guide\n"
+        "License <https://example.com/license>\n"
+        "https://github.com/dtinth/bizdocgen/blob/main/LICENSE\n"
+        "```\n"
+    )
+    _write_project(
+        tmp_path,
+        title="Site",
+        pages={
+            "index.md": index_md,
+            "guide.md": "# Setup steps\n\nDo the thing.\n",
+        },
+    )
+
+    monkeypatch.chdir(tmp_path)
+    exit_code = main(["build"])
+
+    assert exit_code == 0
+    toctree_js = (tmp_path / "_build" / "html" / "_static" / "toctree.js").read_text(
+        encoding="utf-8"
+    )
+
+    import json
+
+    # Strip the JS assignment to get the raw JSON payload
+    json_payload = toctree_js.replace("window.TOCTREE_DATA = ", "").rstrip(";")
+    data = json.loads(json_payload)
+
+    items = data["items"]
+    assert len(items) == 3
+
+    # Explicit title is preserved
+    license_item = items[1]
+    assert license_item["title"] == "License"
+    assert license_item["href"] == "https://example.com/license"
+    assert license_item["id"] == "https://example.com/license"
+    assert license_item["children"] == []
+
+    # No explicit title falls back to the raw URL
+    github_item = items[2]
+    assert github_item["title"] == "https://github.com/dtinth/bizdocgen/blob/main/LICENSE"
+    assert github_item["href"] == "https://github.com/dtinth/bizdocgen/blob/main/LICENSE"
+    assert github_item["id"] == "https://github.com/dtinth/bizdocgen/blob/main/LICENSE"
+    assert github_item["children"] == []
+
+
 def test_thdocs_theme_marks_rendered_pages(tmp_path: Path, monkeypatch) -> None:
     _write_project(tmp_path, title="Site", pages={"index.md": "# Hi\n"})
     monkeypatch.chdir(tmp_path)

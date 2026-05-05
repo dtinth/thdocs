@@ -1,6 +1,7 @@
 """Sphinx extension that generates toctree.js from toctree directives."""
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -8,6 +9,12 @@ from docutils import nodes as docnodes
 from sphinx.addnodes import toctree as toctree_node
 from sphinx.application import Sphinx
 from sphinx.environment import BuildEnvironment
+
+EXTERNAL_URL_RE = re.compile(r"^[a-zA-Z][a-zA-Z0-9+.-]*://")
+
+
+def _is_external(ref: str) -> bool:
+    return EXTERNAL_URL_RE.match(ref) is not None
 
 
 def get_toctree_from_doctree(doctree: docnodes.document, env: BuildEnvironment | None = None) -> list[dict[str, Any]]:
@@ -31,9 +38,8 @@ def _process_toctree_node(node: toctree_node, env: BuildEnvironment | None = Non
 
     # If this toctree has a caption, wrap all entries in a section node
     children = []
-    for entry_caption, docname in entries:
-        # entry_caption should be None since we're using toctree's caption
-        children.append(_build_tree_item(docname, env))
+    for entry_title, docname in entries:
+        children.append(_build_tree_item(docname, env, entry_title))
 
     if caption:
         # Wrap in a section
@@ -52,12 +58,22 @@ def _process_toctree_node(node: toctree_node, env: BuildEnvironment | None = Non
     return items
 
 
-def _build_tree_item(docname: str | tuple[str, str], env: BuildEnvironment | None = None) -> dict[str, Any]:
+def _build_tree_item(docname: str | tuple[str, str], env: BuildEnvironment | None = None, entry_title: str | None = None) -> dict[str, Any]:
     """Build a single tree item from a docname reference."""
     if isinstance(docname, tuple):
         docname, title = docname
     else:
-        title = None
+        title = entry_title
+
+    # Handle external links
+    if _is_external(docname):
+        return {
+            "id": docname,
+            "title": title or docname,
+            "type": "page",
+            "href": docname,
+            "children": [],
+        }
 
     # Prefer Sphinx's parsed page title (env.titles[docname] is the H1 node)
     if not title and env and docname in env.titles:
