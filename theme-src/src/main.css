@@ -357,21 +357,30 @@ main.prose {
 .prose h1 {
   color: #8b8685;
   text-shadow: 2px 2px #00000040;
+  scroll-margin-top: 80px;
 }
 
 .prose h2 {
   color: #d7fc70;
   text-shadow: 2px 2px #d7fc7026;
+  scroll-margin-top: 80px;
 }
 
 .prose h3 {
   color: #febfea;
   text-shadow: 2px 2px #00000040;
+  scroll-margin-top: 80px;
 }
 
 .prose h4 {
   color: #bbeeff;
   text-shadow: 2px 2px #00000040;
+  scroll-margin-top: 80px;
+}
+
+.prose h5,
+.prose h6 {
+  scroll-margin-top: 80px;
 }
 
 .prose blockquote {
@@ -440,6 +449,9 @@ main.prose {
 }
 
 @layer base {
+  html {
+    color-scheme: dark;
+  }
   body {
     @apply antialiased;
     background-color: var(--color-thdocs-bg);
