@@ -96,7 +96,7 @@ if os.environ.get("THDOCS_PDF_BUILD"):
 \setTransitionsFor{{Dingbats}}{{\emojifont}}{{\normalfont}}
 """,
         "preamble": r"""
-\setcounter{tocdepth}{3}
+\setcounter{tocdepth}{4}
 \XeTeXuseglyphmetrics=0
 """,
     }
