@@ -7,13 +7,12 @@ on:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
   publish-image:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v6
 
@@ -44,6 +43,9 @@ jobs:
   self-publish:
     needs: publish-image
     if: always() && needs.publish-image.result == 'success'
+    permissions:
+      contents: read
+      id-token: write
     uses: ./.github/workflows/publish.yml
     with:
       deploy: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
