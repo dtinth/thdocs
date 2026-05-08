@@ -45,3 +45,5 @@ jobs:
     needs: publish-image
     if: always() && needs.publish-image.result == 'success'
     uses: ./.github/workflows/publish.yml
+    with:
+      deploy: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}

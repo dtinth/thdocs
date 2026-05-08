@@ -2,6 +2,11 @@ name: Publish
 
 on:
   workflow_call:
+    inputs:
+      deploy:
+        description: Deploy the built docs artifact via deployer-docs
+        type: boolean
+        default: false
 
 jobs:
   publish:
@@ -18,3 +23,9 @@ jobs:
           path: _build/html
           name: docs
           overwrite: true
+
+      - name: Deploy
+        if: inputs.deploy
+        uses: dtinth/deployer-docs@main
+        with:
+          artifact-name: docs
