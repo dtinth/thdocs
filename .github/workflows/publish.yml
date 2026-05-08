@@ -7,16 +7,10 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Install uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
-
       - uses: actions/checkout@v6
 
-      - name: Install apt dependencies for PDF
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq texlive-xetex latexmk
-
       - name: Build HTML and PDF
-        run: uvx --from git+https://github.com/dtinth/thdocs.git thdocs build --with-pdf
+        uses: ./.github/actions/build-docs
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

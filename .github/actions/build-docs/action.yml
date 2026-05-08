@@ -1,0 +1,8 @@
+name: Build Docs
+description: Build HTML and PDF documentation using thdocs
+runs:
+  using: docker
+  image: docker://ghcr.io/dtinth/thdocs:latest
+  args:
+    - build
+    - --with-pdf
