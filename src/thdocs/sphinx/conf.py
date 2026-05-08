@@ -95,6 +95,10 @@ if os.environ.get("THDOCS_PDF_BUILD"):
 \newfontfamily{{\emojifont}}[Path = {_fp}]{{NotoEmoji-Regular.ttf}}
 \setTransitionsFor{{Dingbats}}{{\emojifont}}{{\normalfont}}
 """,
+        "preamble": r"""
+\setcounter{tocdepth}{3}
+\XeTeXuseglyphmetrics=0
+""",
     }
 else:
     latex_elements = {}
