@@ -1,0 +1,11 @@
+name: Self-publish
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  publish:
+    uses: ./.github/workflows/publish.yml
